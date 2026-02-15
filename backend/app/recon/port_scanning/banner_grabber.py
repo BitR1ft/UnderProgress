@@ -8,7 +8,7 @@ import asyncio
 import logging
 import socket
 import ssl
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from .schemas import ServiceInfo
 
@@ -129,7 +129,7 @@ class BannerGrabber:
     async def grab_banners_for_host(
         self,
         host: str,
-        ports: list[int]
+        ports: List[int]
     ) -> Dict[int, str]:
         """
         Grab banners for multiple ports on a host

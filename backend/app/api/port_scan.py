@@ -43,7 +43,7 @@ async def execute_port_scan(task_id: str, request: PortScanRequest, user_id: str
         
         # Store results
         port_scan_tasks[task_id]["status"] = "completed"
-        port_scan_tasks[task_id]["result"] = result.dict()
+        port_scan_tasks[task_id]["result"] = result.model_dump()
         port_scan_tasks[task_id]["updated_at"] = datetime.now().isoformat()
         
         logger.info(f"Port scan task {task_id} completed successfully")
@@ -78,7 +78,7 @@ async def start_port_scan(
             "task_id": task_id,
             "user_id": user_id,
             "status": "pending",
-            "request": request.dict(),
+            "request": request.model_dump(),
             "result": None,
             "error": None,
             "created_at": datetime.now().isoformat(),

@@ -273,7 +273,7 @@ class PortScanOrchestrator:
         result = self._build_result()
         
         with open(filepath, 'w') as f:
-            json.dump(result.dict(), f, indent=2)
+            json.dump(result.model_dump(), f, indent=2)
         
         logger.info(f"Exported results to {filepath}")
     
