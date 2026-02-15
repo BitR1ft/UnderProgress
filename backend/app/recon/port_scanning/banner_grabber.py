@@ -74,9 +74,11 @@ class BannerGrabber:
             # Wrap in SSL if needed
             if use_ssl:
                 try:
+                    # Create SSL context with minimum TLS 1.2
                     ssl_context = ssl.create_default_context()
                     ssl_context.check_hostname = False
                     ssl_context.verify_mode = ssl.CERT_NONE
+                    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2  # Require TLS 1.2 or higher
                     
                     # Get the underlying socket
                     sock = writer.get_extra_info('socket')
