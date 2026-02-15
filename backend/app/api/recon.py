@@ -7,10 +7,17 @@ Integrates with WebSocket for real-time progress updates.
 
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from typing import Optional, Dict, Any
-from pydantic import BaseModel, Field
 import logging
+from datetime import datetime
 
 from app.recon.domain_discovery import DomainDiscovery
+from app.recon.schemas import (
+    ReconTaskRequest,
+    ReconTaskResponse,
+    ReconTaskStatus,
+    ReconTaskList,
+    DomainDiscoveryResult
+)
 from app.core.security import get_current_user
 
 logger = logging.getLogger(__name__)
@@ -18,28 +25,13 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/recon", tags=["reconnaissance"])
 
 
-class ReconRequest(BaseModel):
-    """Request model for reconnaissance operations."""
-    domain: str = Field(..., description="Target domain for reconnaissance")
-    hackertarget_api_key: Optional[str] = Field(None, description="HackerTarget API key")
-    dns_nameservers: Optional[list[str]] = Field(None, description="Custom DNS nameservers")
-
-
-class ReconResponse(BaseModel):
-    """Response model for reconnaissance operations."""
-    status: str
-    message: str
-    task_id: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
-
-
 # In-memory task storage (will be replaced with database in production)
-recon_tasks = {}
+recon_tasks: Dict[str, Dict[str, Any]] = {}
 
 
-@router.post("/discover", response_model=ReconResponse)
+@router.post("/discover", response_model=ReconTaskResponse)
 async def start_domain_discovery(
-    request: ReconRequest,
+    request: ReconTaskRequest,
     background_tasks: BackgroundTasks,
     current_user: dict = Depends(get_current_user)
 ):
@@ -56,11 +48,16 @@ async def start_domain_discovery(
         logger.info(f"Starting domain discovery for {request.domain} (task: {task_id})")
         
         # Store task status
+        now = datetime.utcnow()
         recon_tasks[task_id] = {
+            "task_id": task_id,
             "status": "pending",
             "domain": request.domain,
             "user_id": current_user.get("user_id"),
             "progress": 0,
+            "message": "Task queued",
+            "created_at": now.isoformat(),
+            "updated_at": now.isoformat(),
             "results": None
         }
         
@@ -73,7 +70,7 @@ async def start_domain_discovery(
             request.dns_nameservers
         )
         
-        return ReconResponse(
+        return ReconTaskResponse(
             status="success",
             message=f"Domain discovery started for {request.domain}",
             task_id=task_id
@@ -84,7 +81,7 @@ async def start_domain_discovery(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/status/{task_id}", response_model=ReconResponse)
+@router.get("/status/{task_id}", response_model=ReconTaskResponse)
 async def get_recon_status(
     task_id: str,
     current_user: dict = Depends(get_current_user)
@@ -103,15 +100,15 @@ async def get_recon_status(
     if task["user_id"] != current_user.get("user_id"):
         raise HTTPException(status_code=403, detail="Not authorized to access this task")
     
-    return ReconResponse(
+    return ReconTaskResponse(
         status=task["status"],
-        message=f"Task progress: {task['progress']}%",
+        message=task.get("message", f"Task progress: {task['progress']}%"),
         task_id=task_id,
         data=task.get("results")
     )
 
 
-@router.get("/results/{task_id}")
+@router.get("/results/{task_id}", response_model=DomainDiscoveryResult)
 async def get_recon_results(
     task_id: str,
     current_user: dict = Depends(get_current_user)
@@ -151,6 +148,8 @@ async def run_domain_discovery(
         # Update status
         recon_tasks[task_id]["status"] = "running"
         recon_tasks[task_id]["progress"] = 10
+        recon_tasks[task_id]["message"] = "Starting domain discovery"
+        recon_tasks[task_id]["updated_at"] = datetime.utcnow().isoformat()
         
         # Initialize discovery
         discovery = DomainDiscovery(
@@ -166,14 +165,18 @@ async def run_domain_discovery(
         # Store results
         recon_tasks[task_id]["status"] = "completed"
         recon_tasks[task_id]["progress"] = 100
+        recon_tasks[task_id]["message"] = "Discovery completed successfully"
         recon_tasks[task_id]["results"] = results
+        recon_tasks[task_id]["updated_at"] = datetime.utcnow().isoformat()
         
         logger.info(f"Domain discovery completed for {domain} (task: {task_id})")
         
     except Exception as e:
         logger.error(f"Error in domain discovery task {task_id}: {str(e)}")
         recon_tasks[task_id]["status"] = "failed"
+        recon_tasks[task_id]["message"] = f"Error: {str(e)}"
         recon_tasks[task_id]["error"] = str(e)
+        recon_tasks[task_id]["updated_at"] = datetime.utcnow().isoformat()
 
 
 @router.delete("/tasks/{task_id}")
@@ -198,21 +201,40 @@ async def delete_recon_task(
     return {"status": "success", "message": "Task deleted"}
 
 
-@router.get("/tasks")
-async def list_recon_tasks(current_user: dict = Depends(get_current_user)):
+@router.get("/tasks", response_model=ReconTaskList)
+async def list_recon_tasks(
+    page: int = 1,
+    per_page: int = 20,
+    current_user: dict = Depends(get_current_user)
+):
     """
     List all reconnaissance tasks for the current user.
     """
     user_id = current_user.get("user_id")
-    user_tasks = {
-        task_id: {
-            "task_id": task_id,
-            "domain": task["domain"],
-            "status": task["status"],
-            "progress": task["progress"]
-        }
-        for task_id, task in recon_tasks.items()
+    user_tasks = [
+        ReconTaskStatus(
+            task_id=task["task_id"],
+            domain=task["domain"],
+            status=task["status"],
+            progress=task["progress"],
+            message=task.get("message"),
+            created_at=datetime.fromisoformat(task["created_at"]),
+            updated_at=datetime.fromisoformat(task["updated_at"]),
+            user_id=task["user_id"]
+        )
+        for task in recon_tasks.values()
         if task["user_id"] == user_id
-    }
+    ]
     
-    return {"tasks": list(user_tasks.values())}
+    # Simple pagination
+    total = len(user_tasks)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_tasks = user_tasks[start:end]
+    
+    return ReconTaskList(
+        tasks=paginated_tasks,
+        total=total,
+        page=page,
+        per_page=per_page
+    )
