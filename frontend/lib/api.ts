@@ -82,4 +82,46 @@ export const projectsApi = {
   stop: (id: string) => apiClient.post(`/projects/${id}/stop`),
 };
 
+// Graph types
+export interface GraphNode {
+  id: string;
+  labels: string[];
+  properties: Record<string, any>;
+}
+
+export interface GraphRelationship {
+  id: string;
+  type: string;
+  startNode: string;
+  endNode: string;
+  properties: Record<string, any>;
+}
+
+export interface AttackSurfaceData {
+  nodes: GraphNode[];
+  relationships: GraphRelationship[];
+}
+
+export interface GraphStats {
+  node_counts: Record<string, number>;
+  total_nodes: number;
+}
+
+export const graphApi = {
+  getAttackSurface: (projectId: string) =>
+    apiClient.get<{ success: boolean; project_id: string; data: AttackSurfaceData }>(`/graph/attack-surface/${projectId}`),
+
+  getVulnerabilities: (projectId: string, severity?: string) =>
+    apiClient.get(`/graph/vulnerabilities/${projectId}`, { params: severity ? { severity } : {} }),
+
+  getTechnologies: (projectId: string, withCves?: boolean) =>
+    apiClient.get(`/graph/technologies/${projectId}`, { params: withCves ? { with_cves: true } : {} }),
+
+  getStats: (projectId: string) =>
+    apiClient.get<{ success: boolean; project_id: string } & GraphStats>(`/graph/stats/${projectId}`),
+
+  getHealth: () =>
+    apiClient.get('/graph/health'),
+};
+
 export default apiClient;
