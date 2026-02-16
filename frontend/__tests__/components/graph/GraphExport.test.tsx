@@ -3,9 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import GraphExport from '@/components/graph/GraphExport';
 
 // Mock URL.createObjectURL and revokeObjectURL
-const mockCreateObjectURL = jest.fn(() => 'blob:mock-url');
+const mockCreateObjectURL = jest.fn(() => 'blob:mock-url') as jest.Mock;
 const mockRevokeObjectURL = jest.fn();
-global.URL.createObjectURL = mockCreateObjectURL;
+global.URL.createObjectURL = mockCreateObjectURL as any;
 global.URL.revokeObjectURL = mockRevokeObjectURL;
 
 describe('GraphExport', () => {
@@ -66,7 +66,7 @@ describe('GraphExport', () => {
     });
 
     let capturedBlob: Blob | null = null;
-    mockCreateObjectURL.mockImplementation((blob: Blob) => {
+    mockCreateObjectURL.mockImplementation((blob: any) => {
       capturedBlob = blob;
       return 'blob:mock-url';
     });
@@ -98,7 +98,7 @@ describe('GraphExport', () => {
     });
 
     let capturedBlob: Blob | null = null;
-    mockCreateObjectURL.mockImplementation((blob: Blob) => {
+    mockCreateObjectURL.mockImplementation((blob: any) => {
       capturedBlob = blob;
       return 'blob:mock-url';
     });
