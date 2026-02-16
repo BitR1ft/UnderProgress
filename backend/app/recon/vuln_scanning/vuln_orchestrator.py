@@ -11,6 +11,7 @@ FYP: AutoPenTest AI - Month 7
 
 import logging
 import time
+import re
 from typing import List, Dict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -22,6 +23,7 @@ from .schemas import (
     ScanMode,
     VulnSeverity,
     VulnCategory,
+    CVEInfo,
 )
 from .nuclei_wrapper import NucleiWrapper
 from .cve_enricher import CVEEnricher
@@ -185,7 +187,6 @@ class VulnScanOrchestrator:
                 cves.append(vuln.template_id.upper())
             # Check title for CVE references
             if "CVE-" in vuln.title.upper():
-                import re
                 cve_matches = re.findall(r'CVE-\d{4}-\d{4,}', vuln.title.upper())
                 cves.extend(cve_matches)
         return list(set(cves))
@@ -285,7 +286,6 @@ class VulnScanOrchestrator:
         if vuln.template_id and vuln.template_id.upper().startswith("CVE-"):
             cve_id = vuln.template_id.upper()
         elif "CVE-" in vuln.title.upper():
-            import re
             matches = re.findall(r'CVE-\d{4}-\d{4,}', vuln.title.upper())
             if matches:
                 cve_id = matches[0]
@@ -366,7 +366,6 @@ class VulnScanOrchestrator:
             mitre_data = self.mitre_mapper.map_cve_to_mitre("", cwe_ids)
             # Create stub CVE with MITRE data
             if mitre_data and not vuln.cve:
-                from .schemas import CVEInfo
                 vuln.cve = CVEInfo(
                     cve_id="N/A",
                     severity=vuln.severity,

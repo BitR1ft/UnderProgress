@@ -49,6 +49,7 @@ class NucleiWrapper:
             config: Nuclei configuration
         """
         self.config = config
+        self.temp_files = []  # Track temp files for cleanup
         self._verify_installation()
         
         if config.auto_update_templates:
@@ -109,14 +110,15 @@ class NucleiWrapper:
             cmd.extend(["-u", targets[0]])
         else:
             # Create temporary file with targets
-            self.targets_file = tempfile.NamedTemporaryFile(
+            targets_file = tempfile.NamedTemporaryFile(
                 mode='w',
                 delete=False,
                 suffix='.txt'
             )
-            self.targets_file.write('\n'.join(targets))
-            self.targets_file.close()
-            cmd.extend(["-l", self.targets_file.name])
+            targets_file.write('\n'.join(targets))
+            targets_file.close()
+            self.temp_files.append(targets_file.name)  # Track for cleanup
+            cmd.extend(["-l", targets_file.name])
         
         # Templates
         if self.config.templates_path:
@@ -333,9 +335,11 @@ class NucleiWrapper:
             logger.error(f"Nuclei scan error: {e}")
             raise
         finally:
-            # Clean up temporary targets file
-            if hasattr(self, 'targets_file') and os.path.exists(self.targets_file.name):
-                os.unlink(self.targets_file.name)
+            # Clean up all temporary files
+            for temp_file in self.temp_files:
+                if os.path.exists(temp_file):
+                    os.unlink(temp_file)
+            self.temp_files.clear()
     
     def get_templates_count(self) -> int:
         """

@@ -288,7 +288,7 @@ class MITREMapper:
         
         Args:
             cve_id: CVE identifier
-            cwe_ids: Optional list of CWE IDs (if already known from NVD)
+            cwe_ids: Optional list of CWE IDs. If a single string is passed, it will be converted to a list.
             
         Returns:
             MITRE data with CWE and CAPEC information
@@ -296,9 +296,11 @@ class MITREMapper:
         if not self.config.enabled:
             return None
         
-        # Get CWE IDs
-        if not cwe_ids:
+        # Normalize cwe_ids to list
+        if cwe_ids is None:
             cwe_ids = self.cve_to_cwe.get(cve_id, [])
+        elif isinstance(cwe_ids, str):
+            cwe_ids = [cwe_ids]
         
         if not cwe_ids:
             logger.debug(f"No CWE mapping found for {cve_id}")

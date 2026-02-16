@@ -65,7 +65,12 @@ class CVEEnricher:
                 # Convert to CVEInfo objects
                 for cve_id, data in cache_data.items():
                     # Check if cache entry is still valid
-                    cached_at = datetime.fromisoformat(data.get("_cached_at", "2000-01-01"))
+                    cached_at_str = data.get("_cached_at")
+                    if not cached_at_str:
+                        logger.warning(f"Cache entry for {cve_id} missing timestamp, skipping")
+                        continue
+                    
+                    cached_at = datetime.fromisoformat(cached_at_str)
                     if datetime.utcnow() - cached_at < timedelta(seconds=self.config.cache_ttl):
                         # Remove cache metadata before creating object
                         data.pop("_cached_at", None)

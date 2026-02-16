@@ -137,7 +137,7 @@ class NucleiConfig(BaseModel):
         description="Tags to include (e.g., cve, xss, sqli)"
     )
     exclude_tags: List[str] = Field(
-        default=["dos", "fuzz"],
+        default_factory=lambda: ["dos", "fuzz"],
         description="Tags to exclude"
     )
     template_folders: List[str] = Field(
