@@ -24,8 +24,8 @@ export default function ChatPage() {
 
   useEffect(() => {
     // Generate client ID and thread ID
-    clientIdRef.current = `client-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    setThreadId(`thread-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+    clientIdRef.current = `client-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+    setThreadId(`thread-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`);
 
     // Connect to WebSocket
     connectWebSocket();
@@ -198,7 +198,7 @@ export default function ChatPage() {
     setMessages([]);
     setCurrentPhase("informational");
     // Generate new thread ID for fresh conversation
-    setThreadId(`thread-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+    setThreadId(`thread-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`);
   }, []);
 
   return (
