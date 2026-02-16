@@ -26,6 +26,7 @@ docker==7.0.0
 
 # AI & LangChain
 langchain==0.1.4
+langchain-core==0.1.16
 langchain-openai==0.0.5
 langchain-anthropic==0.0.1
 langgraph==0.0.20
