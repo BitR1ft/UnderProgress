@@ -168,7 +168,10 @@ def create_default_registry() -> ToolRegistry:
         NaabuTool,
         CurlTool,
         NucleiTool,
-        MetasploitTool
+        MetasploitTool,
+        ExploitExecuteTool,
+        BruteForceTool,
+        SessionManagerTool
     )
     
     registry = ToolRegistry()
@@ -214,6 +217,21 @@ def create_default_registry() -> ToolRegistry:
     registry.register_tool(
         MetasploitTool(),
         allowed_phases=[Phase.EXPLOITATION]
+    )
+    
+    registry.register_tool(
+        ExploitExecuteTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+    
+    registry.register_tool(
+        BruteForceTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+    
+    registry.register_tool(
+        SessionManagerTool(),
+        allowed_phases=[Phase.EXPLOITATION, Phase.POST_EXPLOITATION]
     )
     
     logger.info(f"Created default tool registry with {len(registry.list_all_tools())} tools")
