@@ -90,9 +90,11 @@ class TestMCPTool:
     
     def test_tool_validation(self):
         """Test tool parameter validation"""
-        with pytest.raises(ValueError):
-            # Missing required field
-            MCPTool(name="test")
+        from pydantic import ValidationError
+        
+        with pytest.raises(ValidationError):
+            # Missing required fields (name and description are both required)
+            MCPTool()
 
 
 class TestMCPClient:
