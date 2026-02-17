@@ -52,3 +52,15 @@ class AgentState(TypedDict):
     
     # Stop flag
     should_stop: bool
+    
+    # Approval workflow
+    pending_approval: Optional[Dict[str, Any]]
+    
+    # Live guidance from user
+    guidance: Optional[str]
+    
+    # Progress tracking
+    progress: Optional[Dict[str, Any]]
+    
+    # Checkpoint for resume
+    checkpoint: Optional[Dict[str, Any]]
