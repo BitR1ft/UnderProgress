@@ -7,6 +7,8 @@ from .calculator_tool import CalculatorTool
 from .query_graph_tool import QueryGraphTool
 from .web_search_tool import WebSearchTool
 from .mcp_tools import NaabuTool, CurlTool, NucleiTool, MetasploitTool
+from .exploitation_tools import ExploitExecuteTool, BruteForceTool, SessionManagerTool
+from .post_exploitation_tools import FileOperationsTool, SystemEnumerationTool, PrivilegeEscalationTool
 
 __all__ = [
     "BaseTool",
@@ -22,4 +24,10 @@ __all__ = [
     "CurlTool",
     "NucleiTool",
     "MetasploitTool",
+    "ExploitExecuteTool",
+    "BruteForceTool",
+    "SessionManagerTool",
+    "FileOperationsTool",
+    "SystemEnumerationTool",
+    "PrivilegeEscalationTool",
 ]

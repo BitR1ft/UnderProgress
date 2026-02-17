@@ -28,10 +28,40 @@ def should_continue(state: AgentState) -> str:
         return "end"
     elif next_action == "act":
         return "act"
+    elif next_action == "approval":
+        return "approval"
     elif next_action == "observe":
         return "observe"
     else:
         return "think"
+
+
+async def approval_gate(state: AgentState) -> Dict[str, Any]:
+    """
+    Approval gate node: pauses execution for dangerous operations.
+    
+    If pending_approval is set and not yet approved, holds execution.
+    """
+    approval = state.get("pending_approval")
+    
+    if approval and approval.get("status") == "approved":
+        return {
+            "pending_approval": None,
+            "next_action": "act",
+        }
+    elif approval and approval.get("status") == "rejected":
+        from langchain_core.messages import AIMessage
+        return {
+            "pending_approval": None,
+            "next_action": "end",
+            "should_stop": True,
+            "messages": state["messages"] + [
+                AIMessage(content="Operation rejected by user. Stopping execution.")
+            ],
+        }
+    
+    # Still pending - keep waiting
+    return {"next_action": "end", "should_stop": True}
 
 
 def create_agent_graph(
@@ -60,6 +90,7 @@ def create_agent_graph(
     workflow.add_node("think", react_nodes.think)
     workflow.add_node("act", react_nodes.act)
     workflow.add_node("observe", react_nodes.observe)
+    workflow.add_node("approval", approval_gate)
     
     # Set entry point
     workflow.set_entry_point("think")
@@ -70,6 +101,7 @@ def create_agent_graph(
         should_continue,
         {
             "act": "act",
+            "approval": "approval",
             "end": END,
         }
     )
@@ -88,6 +120,15 @@ def create_agent_graph(
         should_continue,
         {
             "think": "think",
+            "end": END,
+        }
+    )
+    
+    workflow.add_conditional_edges(
+        "approval",
+        should_continue,
+        {
+            "act": "act",
             "end": END,
         }
     )

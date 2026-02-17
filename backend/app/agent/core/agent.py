@@ -71,7 +71,11 @@ class Agent:
             selected_tool=None,
             tool_input=None,
             observation=None,
-            should_stop=False
+            should_stop=False,
+            pending_approval=None,
+            guidance=None,
+            progress=None,
+            checkpoint=None,
         )
     
     async def chat(

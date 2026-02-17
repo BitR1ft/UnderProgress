@@ -820,3 +820,100 @@ class ExploitNode(BaseNode):
         properties = self._add_tenant_info(properties, user_id, project_id)
         
         return self.client.create_node('Exploit', properties, merge=True)
+
+
+class SessionNode(BaseNode):
+    """Active exploitation session node."""
+    
+    def create(
+        self,
+        session_id: str,
+        session_type: str,
+        target_host: str,
+        target_port: Optional[int] = None,
+        status: str = "active",
+        user_id: Optional[str] = None,
+        project_id: Optional[str] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Create a Session node.
+        
+        Args:
+            session_id: Session identifier
+            session_type: Type of session (meterpreter, shell, etc.)
+            target_host: Target host IP/hostname
+            target_port: Target port number
+            status: Session status (active, closed, lost)
+            user_id: User identifier for multi-tenancy
+            project_id: Project identifier for multi-tenancy
+            **kwargs: Additional properties
+            
+        Returns:
+            Created node properties
+        """
+        properties = {
+            'id': session_id,
+            'session_type': session_type,
+            'target_host': target_host,
+            'status': status,
+        }
+        
+        if target_port is not None:
+            properties['target_port'] = target_port
+        
+        properties.update(kwargs)
+        properties = self._add_tenant_info(properties, user_id, project_id)
+        
+        return self.client.create_node('Session', properties, merge=True)
+
+
+class CredentialNode(BaseNode):
+    """Discovered credential node."""
+    
+    def create(
+        self,
+        credential_id: str,
+        username: str,
+        credential_type: str = "password",
+        service: Optional[str] = None,
+        target_host: Optional[str] = None,
+        source: Optional[str] = None,
+        user_id: Optional[str] = None,
+        project_id: Optional[str] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Create a Credential node.
+        
+        Args:
+            credential_id: Credential identifier
+            username: Discovered username
+            credential_type: Type (password, hash, token, key)
+            service: Service the credential is for
+            target_host: Host where credential was found
+            source: Discovery source (brute_force, dump, etc.)
+            user_id: User identifier for multi-tenancy
+            project_id: Project identifier for multi-tenancy
+            **kwargs: Additional properties
+            
+        Returns:
+            Created node properties
+        """
+        properties = {
+            'id': credential_id,
+            'username': username,
+            'credential_type': credential_type,
+        }
+        
+        if service:
+            properties['service'] = service
+        if target_host:
+            properties['target_host'] = target_host
+        if source:
+            properties['source'] = source
+        
+        properties.update(kwargs)
+        properties = self._add_tenant_info(properties, user_id, project_id)
+        
+        return self.client.create_node('Credential', properties, merge=True)
