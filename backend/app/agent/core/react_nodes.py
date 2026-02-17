@@ -22,6 +22,10 @@ logger = logging.getLogger(__name__)
 # Maximum number of messages before triggering context summarization
 MAX_CONTEXT_MESSAGES = 20
 
+# Truncation limits for context summarization
+MAX_FINDING_SUMMARY_LENGTH = 200
+MAX_TOOL_OUTPUT_SUMMARY_LENGTH = 150
+
 # Common tool errors mapped to recovery suggestions
 TOOL_ERROR_RECOVERY: Dict[str, str] = {
     "timeout": "The tool timed out. Try reducing the scope (fewer ports, smaller wordlist) or increasing the timeout.",
@@ -98,9 +102,9 @@ class ReActNodes:
         for msg in older:
             content = msg.content if hasattr(msg, 'content') else str(msg)
             if "THOUGHT:" in content:
-                findings.append(content.split("THOUGHT:")[-1].strip()[:200])
+                findings.append(content.split("THOUGHT:")[-1].strip()[:MAX_FINDING_SUMMARY_LENGTH])
             if "Tool output:" in content:
-                tools_used.append(content[:150])
+                tools_used.append(content[:MAX_TOOL_OUTPUT_SUMMARY_LENGTH])
         
         summary_parts = []
         if findings:
@@ -276,6 +280,10 @@ TOOL_INPUT: [JSON parameters if using a tool, or your response text if respondin
         
         # Ensure tool_input is a dict for **kwargs unpacking
         if not isinstance(tool_input, dict):
+            logger.warning(
+                f"Tool input for '{tool_name}' is not a dict (got {type(tool_input).__name__}), "
+                f"wrapping as {{'input': ...}}"
+            )
             tool_input = {"input": tool_input} if tool_input else {}
         
         # Execute the tool with structured error handling

@@ -176,8 +176,13 @@ class AttackPathRouter:
                 best_score = score
                 best_category = category
 
-        # Calculate confidence as ratio of best score to total matches
-        confidence = best_score / total_keywords if total_keywords > 0 else 0.0
+        # Calculate confidence combining match ratio and absolute score quality.
+        # A single keyword match across all categories scores 1.0 ratio but low
+        # absolute quality, so we blend the two signals.
+        match_ratio = best_score / total_keywords if total_keywords > 0 else 0.0
+        # Require at least 2 keyword matches for high confidence
+        score_quality = min(best_score / 2.0, 1.0)
+        confidence = (match_ratio + score_quality) / 2.0
 
         # Collect ranked alternatives (categories with score > 0, excluding best)
         alternatives = sorted(
