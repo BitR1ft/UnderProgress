@@ -3,6 +3,7 @@
 import { useCallback } from 'react';
 import { ImageDown, FileJson, FileSpreadsheet, FileCode2, Link2 } from 'lucide-react';
 import type { GraphNode, GraphRelationship } from '@/lib/api';
+import { toast } from '@/store/toastStore';
 
 interface GraphExportProps {
   graphRef: React.RefObject<any>;
@@ -113,21 +114,10 @@ export default function GraphExport({ graphRef, nodes, relationships }: GraphExp
       navigator.clipboard
         .writeText(window.location.href)
         .then(() => {
-          // Attempt to show a brief success toast; import lazily to avoid circular deps
-          try {
-            const { toast } = require('@/store/toastStore');
-            toast.success('Link copied', 'Graph URL copied to clipboard');
-          } catch {
-            // toast store not available in this context
-          }
+          toast.success('Link copied', 'Graph URL copied to clipboard');
         })
         .catch(() => {
-          try {
-            const { toast } = require('@/store/toastStore');
-            toast.error('Copy failed', 'Could not copy link to clipboard');
-          } catch {
-            // toast store not available in this context
-          }
+          toast.error('Copy failed', 'Could not copy link to clipboard');
         });
     }
   }, []);

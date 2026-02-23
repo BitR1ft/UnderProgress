@@ -42,7 +42,15 @@ class CorrelationIDMiddleware(BaseHTTPMiddleware):
 
 class RequestIDMiddleware(BaseHTTPMiddleware):
     """
-    Add unique request ID to each request for tracking and logging
+    Add unique request ID to each request for tracking and logging.
+
+    .. deprecated::
+        ``CorrelationIDMiddleware`` supersedes this class: it propagates the
+        upstream ``X-Request-ID`` header (or generates one) and sets both
+        ``request.state.correlation_id`` and ``request.state.request_id``.
+        This middleware is kept for backwards compatibility only; when both are
+        registered, ``CorrelationIDMiddleware`` must run first so that
+        ``request_id`` is already present when this class executes.
     """
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         request_id = getattr(request.state, "request_id", None) or str(uuid.uuid4())

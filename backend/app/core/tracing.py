@@ -41,10 +41,21 @@ def configure_tracing(
 
     otlp_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
     if otlp_endpoint:
-        # Allow disabling TLS only when explicitly requested (never default in prod)
-        insecure = os.getenv("OTEL_EXPORTER_OTLP_INSECURE", "false").lower() == "true"
-        exporter = OTLPSpanExporter(endpoint=otlp_endpoint, insecure=insecure)
-        logger.info("OpenTelemetry: exporting traces to OTLP endpoint %s (insecure=%s)", otlp_endpoint, insecure)
+        # Allow disabling TLS only when explicitly requested and not in production
+        env = os.getenv("ENVIRONMENT", "development").lower()
+        insecure_requested = os.getenv("OTEL_EXPORTER_OTLP_INSECURE", "false").lower() == "true"
+        if insecure_requested and env == "production":
+            logger.warning(
+                "OpenTelemetry: OTEL_EXPORTER_OTLP_INSECURE=true is not allowed in production. "
+                "TLS will be enforced."
+            )
+            insecure_requested = False
+        exporter = OTLPSpanExporter(endpoint=otlp_endpoint, insecure=insecure_requested)
+        logger.info(
+            "OpenTelemetry: exporting traces to OTLP endpoint %s (insecure=%s)",
+            otlp_endpoint,
+            insecure_requested,
+        )
     else:
         exporter = ConsoleSpanExporter()
         logger.info("OpenTelemetry: exporting traces to console (no OTLP endpoint configured)")

@@ -15,10 +15,17 @@ interface ToastStore {
   removeToast: (id: string) => void;
 }
 
+function generateToastId(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return `toast-${crypto.randomUUID()}`;
+  }
+  return `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
   addToast: (toast) => {
-    const id = `toast-${typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`}`;
+    const id = generateToastId();
     set((state) => ({ toasts: [...state.toasts, { ...toast, id }] }));
     return id;
   },
