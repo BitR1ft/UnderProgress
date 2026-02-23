@@ -8,7 +8,7 @@ import time
 from app.core.secrets import validate_secrets, generate_secret, SecretsValidationError
 
 # Day 159: RBAC
-from app.core.rbac import UserRole, Permission, has_permission, get_role_permissions
+from app.core.rbac import UserRole, Permission, has_permission, get_role_permissions, require_permission, require_role
 
 # Day 160: Audit Logging
 from app.core.audit import log_audit, AuditAction
@@ -59,6 +59,30 @@ def test_get_role_permissions_returns_set():
     perms = get_role_permissions(UserRole.ANALYST)
     assert isinstance(perms, set)
     assert len(perms) > 0
+
+def test_require_permission_viewer_default_blocks_create():
+    """Default role (viewer) must NOT have project:create — fail-secure behavior."""
+    from fastapi import HTTPException
+    check_fn = require_permission(Permission.PROJECT_CREATE)
+    # Call with viewer (the new secure default) — should raise 403
+    with pytest.raises(HTTPException) as exc_info:
+        check_fn(UserRole.VIEWER.value)
+    assert exc_info.value.status_code == 403
+
+def test_require_role_viewer_default_blocks_admin_endpoint():
+    """Default role (viewer) must NOT satisfy require_role(ADMIN)."""
+    from fastapi import HTTPException
+    check_fn = require_role(UserRole.ADMIN)
+    with pytest.raises(HTTPException) as exc_info:
+        check_fn(UserRole.VIEWER.value)
+    assert exc_info.value.status_code == 403
+
+def test_require_permission_unknown_role_returns_403():
+    from fastapi import HTTPException
+    check_fn = require_permission(Permission.PROJECT_READ)
+    with pytest.raises(HTTPException) as exc_info:
+        check_fn("superadmin")
+    assert exc_info.value.status_code == 403
 
 # --- Day 160: Audit Logging ---
 def test_log_audit_emits_json():
@@ -111,6 +135,24 @@ def test_rate_limiter_window_expiry():
     time.sleep(1.1)
     allowed, _ = limiter.is_allowed("expiry_key")
     assert allowed
+
+def test_rate_limiter_check_raises_http429_when_exceeded():
+    """The check() method must raise HTTP 429 when the limit is exceeded."""
+    from fastapi import HTTPException
+    limiter = SlidingWindowRateLimiter(max_calls=2, window_seconds=60, name="test_check")
+    limiter.check("check_key")
+    limiter.check("check_key")
+    with pytest.raises(HTTPException) as exc_info:
+        limiter.check("check_key", correlation_id="req-xyz")
+    assert exc_info.value.status_code == 429
+    assert "Retry-After" in exc_info.value.headers
+
+def test_rate_limiter_check_allows_within_limit():
+    """check() should not raise when within the limit."""
+    limiter = SlidingWindowRateLimiter(max_calls=10, window_seconds=60, name="test_check_ok")
+    # Should not raise
+    for _ in range(5):
+        limiter.check("ok_key")
 
 # --- Day 162: WAF ---
 def test_waf_blocks_sql_injection():

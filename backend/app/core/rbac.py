@@ -82,7 +82,8 @@ def require_permission(permission: Permission):
             ...
         ):
     """
-    def _check(role_str: str = "analyst") -> None:
+    def _check(role_str: str = UserRole.VIEWER.value) -> None:
+        """Default to least-privileged role (viewer) if none is provided."""
         try:
             role = UserRole(role_str)
         except ValueError:
@@ -112,7 +113,8 @@ def require_role(*roles: UserRole):
     """
     allowed = set(roles)
 
-    def _check(role_str: str = "analyst") -> None:
+    def _check(role_str: str = UserRole.VIEWER.value) -> None:
+        """Default to least-privileged role (viewer) if none is provided."""
         try:
             role = UserRole(role_str)
         except ValueError:

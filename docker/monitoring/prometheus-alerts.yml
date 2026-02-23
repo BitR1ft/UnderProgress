@@ -37,9 +37,9 @@ groups:
 
       - alert: NoActiveScans
         expr: active_scans_total == 0
-        for: 30m
+        for: 60m
         labels:
           severity: info
         annotations:
-          summary: "No active scans for 30 minutes"
-          description: "System may be idle or scan queue is stuck."
+          summary: "No active scans for 60 minutes"
+          description: "System may be idle or scan queue is stuck. Check if this is expected (e.g. off-hours)."
