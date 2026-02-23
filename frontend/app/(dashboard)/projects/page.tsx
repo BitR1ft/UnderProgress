@@ -4,7 +4,8 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useProjects, useDeleteProject } from '@/hooks/useProjects';
 import { ProjectCard } from '@/components/projects/ProjectCard';
-import { Search, SortAsc, SortDesc, Filter } from 'lucide-react';
+import { Search, SortAsc, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import type { Project } from '@/lib/api';
 
 const STATUS_OPTIONS = ['all', 'draft', 'queued', 'running', 'completed', 'failed', 'paused'];
@@ -19,11 +20,13 @@ const PAGE_SIZE = 10;
 export default function ProjectsPage() {
   const { data: projects, isLoading, error } = useProjects();
   const deleteProject = useDeleteProject();
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('created_desc');
   const [page, setPage] = useState(1);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const handleDelete = async (projectId: string) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
@@ -106,56 +109,75 @@ export default function ProjectsPage() {
 
       {/* Filters */}
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-6">
-        <div className="flex flex-wrap gap-3 items-center">
-          {/* Search */}
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" aria-hidden="true" />
-            <input
-              type="search"
-              placeholder="Search projects..."
-              value={searchQuery}
-              onChange={(e) => handleFilterChange(() => setSearchQuery(e.target.value))}
-              className="w-full pl-9 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              aria-label="Search projects"
-            />
-          </div>
+        {/* Mobile: collapsible toggle */}
+        {!isDesktop && (
+          <button
+            onClick={() => setFiltersOpen((o) => !o)}
+            className="w-full flex items-center justify-between text-sm text-gray-300 mb-2"
+            aria-expanded={filtersOpen}
+          >
+            <span className="flex items-center gap-2">
+              <Filter className="w-4 h-4" aria-hidden="true" />
+              Filters &amp; Sort
+            </span>
+            {filtersOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        )}
 
-          {/* Status filter */}
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-500" aria-hidden="true" />
-            <select
-              value={statusFilter}
-              onChange={(e) => handleFilterChange(() => setStatusFilter(e.target.value))}
-              className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              aria-label="Filter by status"
-            >
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {s === 'all' ? 'All Statuses' : s.charAt(0).toUpperCase() + s.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
+        {(isDesktop || filtersOpen) && (
+          <div className="flex flex-wrap gap-3 items-center">
+            {/* Search */}
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" aria-hidden="true" />
+              <input
+                type="search"
+                placeholder="Search projects..."
+                value={searchQuery}
+                onChange={(e) => handleFilterChange(() => setSearchQuery(e.target.value))}
+                className="w-full pl-9 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                aria-label="Search projects"
+              />
+            </div>
 
-          {/* Sort */}
-          <div className="flex items-center gap-2">
-            <SortAsc className="w-4 h-4 text-gray-500" aria-hidden="true" />
-            <select
-              value={sortBy}
-              onChange={(e) => handleFilterChange(() => setSortBy(e.target.value))}
-              className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              aria-label="Sort projects"
-            >
-              {SORT_FIELDS.map((f) => (
-                <option key={f.value} value={f.value}>{f.label}</option>
-              ))}
-            </select>
-          </div>
+            {/* Status filter */}
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-gray-500" aria-hidden="true" />
+              <select
+                value={statusFilter}
+                onChange={(e) => handleFilterChange(() => setStatusFilter(e.target.value))}
+                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Filter by status"
+              >
+                {STATUS_OPTIONS.map((s) => (
+                  <option key={s} value={s}>
+                    {s === 'all' ? 'All Statuses' : s.charAt(0).toUpperCase() + s.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <span className="text-gray-500 text-sm ml-auto">
-            {filtered.length} project{filtered.length !== 1 ? 's' : ''}
-          </span>
-        </div>
+            {/* Sort – hidden on mobile */}
+            {isDesktop && (
+              <div className="flex items-center gap-2">
+                <SortAsc className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                <select
+                  value={sortBy}
+                  onChange={(e) => handleFilterChange(() => setSortBy(e.target.value))}
+                  className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="Sort projects"
+                >
+                  {SORT_FIELDS.map((f) => (
+                    <option key={f.value} value={f.value}>{f.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <span className="text-gray-500 text-sm ml-auto">
+              {filtered.length} project{filtered.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Project List */}

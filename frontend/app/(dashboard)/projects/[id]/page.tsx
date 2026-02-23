@@ -19,6 +19,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { useProject, useDeleteProject, useStartProject, useStopProject } from '@/hooks/useProjects';
+import { ScanProgressPanel } from '@/components/projects/ScanProgressPanel';
 
 // Simple status timeline derived from project data
 function StatusTimeline({ project }: { project: any }) {
@@ -249,6 +250,11 @@ export default function ProjectDetailPage() {
 
       {/* Status Timeline */}
       <StatusTimeline project={project} />
+
+      {/* Live Scan Progress (shown when running or queued) */}
+      {(project.status === 'running' || project.status === 'queued') && (
+        <ScanProgressPanel projectId={id} />
+      )}
 
       {/* Modules Settings */}
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
