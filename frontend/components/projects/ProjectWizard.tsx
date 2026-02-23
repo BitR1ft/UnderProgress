@@ -30,6 +30,8 @@ const WIZARD_DEFAULTS: Partial<ProjectFormData> = {
   max_crawl_depth: 3,
   concurrent_scans: 5,
 };
+
+const STEPS = [
   { id: 1, title: 'Basic Info', description: 'Project name and target' },
   { id: 2, title: 'Target Config', description: 'Scanning modules' },
   { id: 3, title: 'Tool Selection', description: 'Advanced tool settings' },
@@ -408,6 +410,7 @@ export function ProjectWizard({ onSubmit, isLoading, error }: ProjectWizardProps
             <Button
               type="button"
               onClick={handleNext}
+              disabled={isLoading}
               className="flex items-center gap-2"
               aria-label="Go to next step"
             >

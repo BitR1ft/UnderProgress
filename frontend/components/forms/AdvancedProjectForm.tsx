@@ -10,8 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select } from '@/components/ui/select';
-import { ChevronDown, ChevronRight, Save, RotateCcw } from 'lucide-react';
-import { useFormAutosave } from '@/hooks/useFormAutosave';
+import { ChevronDown, ChevronRight, Save, RotateCcw, Cloud, Loader2, Check } from 'lucide-react';
+import { useFormAutosave, type AutosaveStatus } from '@/hooks/useFormAutosave';
 
 // ─── Full schema with 180+ parameters ─────────────────────────────────────────
 const advancedSchema = z.object({
@@ -207,6 +207,34 @@ interface AdvancedProjectFormProps {
   defaultValues?: Partial<AdvancedProjectFormData>;
   error?: string;
   autosaveKey?: string;
+  submitLabel?: string;
+}
+
+// ─── Save status indicator ────────────────────────────────────────────────────
+/**
+ * Displays a live autosave status indicator.
+ * - 'idle': renders nothing
+ * - 'pending': shows an animated spinner with "Saving…" text
+ * - 'saved': shows a check mark with "Saved" text, auto-reverts to idle after 2s
+ */
+function SaveIndicator({ status }: { status: AutosaveStatus }) {
+  if (status === 'idle') return null;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 text-xs transition-all ${
+        status === 'pending' ? 'text-gray-400' : 'text-green-400'
+      }`}
+      aria-live="polite"
+      aria-label={status === 'pending' ? 'Saving draft…' : 'Draft saved'}
+    >
+      {status === 'pending' ? (
+        <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
+      ) : (
+        <Check className="w-3 h-3" aria-hidden="true" />
+      )}
+      {status === 'pending' ? 'Saving…' : 'Saved'}
+    </span>
+  );
 }
 
 // ─── Accordion section wrapper ────────────────────────────────────────────────
@@ -307,6 +335,7 @@ export function AdvancedProjectForm({
   defaultValues,
   error,
   autosaveKey = 'advanced-project-form',
+  submitLabel = 'Create Project',
 }: AdvancedProjectFormProps) {
   const [draftRestored, setDraftRestored] = useState(false);
   const [showDraftBanner, setShowDraftBanner] = useState(false);
@@ -343,7 +372,7 @@ export function AdvancedProjectForm({
 
   // Autosave
   const watchedValues = watch();
-  const { getDraft, clearDraft } = useFormAutosave({
+  const { getDraft, clearDraft, autosaveStatus } = useFormAutosave({
     key: autosaveKey,
     data: watchedValues,
     debounceMs: 1500,
@@ -804,9 +833,12 @@ export function AdvancedProjectForm({
 
       {/* Submit */}
       <div className="flex items-center justify-between pt-2">
-        <p className="text-xs text-gray-500">
-          {isDirty ? 'Unsaved changes · Draft auto-saved' : 'No unsaved changes'}
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="text-xs text-gray-500">
+            {isDirty ? 'Unsaved changes' : 'No unsaved changes'}
+          </p>
+          <SaveIndicator status={autosaveStatus} />
+        </div>
         <div className="flex gap-3">
           <Button
             type="button"
@@ -826,7 +858,7 @@ export function AdvancedProjectForm({
             aria-label="Save project configuration"
           >
             <Save className="w-4 h-4" />
-            {isLoading ? 'Creating...' : 'Create Project'}
+            {isLoading ? 'Saving...' : submitLabel}
           </Button>
         </div>
       </div>
