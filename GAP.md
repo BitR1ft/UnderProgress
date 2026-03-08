@@ -35,16 +35,16 @@ Replace in-memory dicts for users/projects with persistent storage. Update healt
 - Backup/restore strategy (pg_dump, scheduled backups).
 
 ### Tasks
-- [ ] Finalize Prisma schema for Users, Projects, Tasks (recon, port-scan, http-probe), Sessions.
-- [ ] Implement DB repositories (users_repo, projects_repo, tasks_repo) with async Prisma client.
-- [ ] Refactor auth endpoints to use DB (register/login/me/refresh).
-- [ ] Refactor project CRUD to use DB.
-- [ ] Store background job metadata/results in DB (replace in-memory task dicts).
-- [ ] Add DB readiness/health in `/health` and startup event.
-- [ ] Create migration scripts and Dev/Stage/Prod configs for DATABASE_URL.
-- [ ] Create seed script (admin user, sample project).
-- [ ] Implement daily automated backups with retention (7/30 days).
-- [ ] Update docs: DB schema, migrations, seeding, backups.
+- [x] Finalize Prisma schema for Users, Projects, Tasks (recon, port-scan, http-probe), Sessions.
+- [x] Implement DB repositories (users_repo, projects_repo, tasks_repo) with async Prisma client.
+- [x] Refactor auth endpoints to use DB (register/login/me/refresh).
+- [x] Refactor project CRUD to use DB.
+- [x] Store background job metadata/results in DB (replace in-memory task dicts).
+- [x] Add DB readiness/health in `/health` and startup event.
+- [x] Create migration scripts and Dev/Stage/Prod configs for DATABASE_URL.
+- [x] Create seed script (admin user, sample project).
+- [x] Implement daily automated backups with retention (7/30 days).
+- [x] Update docs: DB schema, migrations, seeding, backups.
 
 ### Acceptance Criteria
 - Auth/Projects data persists across restarts.
@@ -75,16 +75,16 @@ Professional integrations to match plan requirements and unify results.
 - Configurable “active vs passive” modes.
 
 ### Tasks
-- [ ] Define canonical schemas for ReconResult, Endpoint, Technology, Finding.
-- [ ] Integrate Naabu: target validation, concurrent scanning, safe defaults.
-- [ ] Integrate Nuclei: severity/tag filters, output normalization, auto template updates.
-- [ ] Integrate Katana (JS rendering opt-in), GAU (4 providers), Kiterunner.
-- [ ] Integrate Wappalyzer and httpx (TLS, JARM, security headers).
-- [ ] Integrate Shodan (API), Interactsh for OOB detections.
-- [ ] Build merging/deduplication pipeline and confidence scoring.
-- [ ] Add structured logs and metrics for each tool.
-- [ ] Update API endpoints to kick off tool runs and fetch status/results.
-- [ ] Document usage, configuration, limits, and safety.
+- [x] Define canonical schemas for ReconResult, Endpoint, Technology, Finding.
+- [x] Integrate Naabu: target validation, concurrent scanning, safe defaults.
+- [x] Integrate Nuclei: severity/tag filters, output normalization, auto template updates.
+- [x] Integrate Katana (JS rendering opt-in), GAU (4 providers), Kiterunner.
+- [x] Integrate Wappalyzer and httpx (TLS, JARM, security headers).
+- [x] Integrate Shodan (API), Interactsh for OOB detections.
+- [x] Build merging/deduplication pipeline and confidence scoring.
+- [x] Add structured logs and metrics for each tool.
+- [x] Update API endpoints to kick off tool runs and fetch status/results.
+- [x] Document usage, configuration, limits, and safety.
 
 ### Acceptance Criteria
 - Each tool produces normalized outputs; orchestrators run concurrently without resource contention.
@@ -104,11 +104,11 @@ Enhance findings with CVE, CWE, CAPEC, and exploit workflows.
 - Auto-update routines for vuln databases.
 
 ### Tasks
-- [ ] Implement enrichment service: NVD/Vulners lookup; cache results (Postgres).
-- [ ] Map vulnerabilities -> CWE -> CAPEC; attach to Neo4j nodes.
-- [ ] Normalize severity and compute risk scores.
-- [ ] Add scheduled job to refresh DBs (templates, CWE/CAPEC).
-- [ ] Extend REST endpoints for filtered queries (severity, tag, exploitability).
+- [x] Implement enrichment service: NVD/Vulners lookup; cache results (Postgres).
+- [x] Map vulnerabilities -> CWE -> CAPEC; attach to Neo4j nodes.
+- [x] Normalize severity and compute risk scores.
+- [x] Add scheduled job to refresh DBs (templates, CWE/CAPEC).
+- [x] Extend REST endpoints for filtered queries (severity, tag, exploitability).
 
 ### Acceptance Criteria
 - Vulnerabilities display enriched metadata in API/Neo4j.
@@ -128,11 +128,11 @@ Complete graph model with nodes/relationships, constraints, ingestion, and queri
 - Graph stats endpoints.
 
 ### Tasks
-- [ ] Finalize node/relationship schema and indexes.
-- [ ] Implement ingestion functions to populate full chains (Domain→Endpoint→Port→Tech→Vuln→CVE/CWE/CAPEC).
-- [ ] Add tenancy guards to queries and clear-project operations.
-- [ ] Build graph validation scripts (node counts, missing links).
-- [ ] Update graph docs and diagrams.
+- [x] Finalize node/relationship schema and indexes.
+- [x] Implement ingestion functions to populate full chains (Domain→Endpoint→Port→Tech→Vuln→CVE/CWE/CAPEC).
+- [x] Add tenancy guards to queries and clear-project operations.
+- [x] Build graph validation scripts (node counts, missing links).
+- [x] Update graph docs and diagrams.
 
 ### Acceptance Criteria
 - End-to-end ingestion produces expected nodes/edges for sample data.
@@ -151,11 +151,11 @@ Agent with LangGraph, tools, memory, safety, realtime streaming.
 - Logging and audit trails.
 
 ### Tasks
-- [ ] Define agent graph (phases, tools), system prompts per phase.
-- [ ] Implement tool adapters: recon, port scan, http probe, Nuclei, query_graph, web_search.
-- [ ] Add approval gating; stop/resume; session persistence.
-- [ ] Implement SSE/WS streaming channels and backpressure handling.
-- [ ] Document agent usage and safety model.
+- [x] Define agent graph (phases, tools), system prompts per phase.
+- [x] Implement tool adapters: recon, port scan, http probe, Nuclei, query_graph, web_search.
+- [x] Add approval gating; stop/resume; session persistence.
+- [x] Implement SSE/WS streaming channels and backpressure handling.
+- [x] Document agent usage and safety model.
 
 ### Acceptance Criteria
 - Agent can orchestrate end-to-end flow safely with approvals.
@@ -174,11 +174,11 @@ Build MCP-compliant tool servers to expose capabilities.
 - Tests and docs.
 
 ### Tasks
-- [ ] Implement MCP server skeleton (spec-compliant).
-- [ ] Wire tools with request/response contracts; error handling.
-- [ ] Add phase restriction and RBAC checks.
-- [ ] Unit/integration tests; load tests for concurrency.
-- [ ] Documentation and usage examples.
+- [x] Implement MCP server skeleton (spec-compliant).
+- [x] Wire tools with request/response contracts; error handling.
+- [x] Add phase restriction and RBAC checks.
+- [x] Unit/integration tests; load tests for concurrency.
+- [x] Documentation and usage examples.
 
 ### Acceptance Criteria
 - MCP servers respond per spec; tools operate correctly.
@@ -198,13 +198,13 @@ Professional UX with forms, graph visualization, and realtime updates.
 - Responsive design; UI docs.
 
 ### Tasks
-- [ ] Auth pages and state mgmt (tokens, refresh).
-- [ ] Project list/detail/create/update/delete pages.
-- [ ] Multi-step form design, validation, error handling; autosave drafts.
-- [ ] Graph viewer with interactions (hover/click/filter/search), export PNG/JSON/GEXF.
-- [ ] SSE/WS clients for progress and agent streaming; toast/notification system.
-- [ ] Accessibility pass; responsive breakpoints; dark mode.
-- [ ] E2E tests (Playwright/Cypress) for critical flows.
+- [x] Auth pages and state mgmt (tokens, refresh).
+- [x] Project list/detail/create/update/delete pages.
+- [x] Multi-step form design, validation, error handling; autosave drafts.
+- [x] Graph viewer with interactions (hover/click/filter/search), export PNG/JSON/GEXF.
+- [x] SSE/WS clients for progress and agent streaming; toast/notification system.
+- [x] Accessibility pass; responsive breakpoints; dark mode.
+- [x] E2E tests (Playwright/Cypress) for critical flows.
 
 ### Acceptance Criteria
 - Full UI flows work reliably; real-time updates visible.
@@ -224,13 +224,13 @@ Complete stack for operating safely.
 - Security: secrets mgmt, RBAC, audit logs, rate limiting, CORS/WAF, dependency scanning (SCA).
 
 ### Tasks
-- [ ] Add logging middleware; correlation IDs; request/response sampling.
-- [ ] Export metrics (latency, error rates, queue lengths, job durations).
-- [ ] Instrument traces across API and orchestrators.
-- [ ] Configure alerts (Slack/Email) for SLO violations.
-- [ ] Implement RBAC roles; audit log for sensitive operations.
-- [ ] Rate limiting per user/project; safe defaults for tool usage.
-- [ ] Set up Dependabot/Snyk; regular SCA runs; pinned versions.
+- [x] Add logging middleware; correlation IDs; request/response sampling.
+- [x] Export metrics (latency, error rates, queue lengths, job durations).
+- [x] Instrument traces across API and orchestrators.
+- [x] Configure alerts (Slack/Email) for SLO violations.
+- [x] Implement RBAC roles; audit log for sensitive operations.
+- [x] Rate limiting per user/project; safe defaults for tool usage.
+- [x] Set up Dependabot/Snyk; regular SCA runs; pinned versions.
 
 ### Acceptance Criteria
 - Dashboards cover all critical components; alerts fire on SLO breaches.
@@ -249,11 +249,11 @@ Achieve high confidence.
 - Coverage ≥80% backend; ≥70% frontend.
 
 ### Tasks
-- [ ] Expand unit/integration test suites; cover DB and orchestrators.
-- [ ] Add contract tests for MCP servers and agent tools.
-- [ ] E2E scenarios for auth, projects, recon runs, graph viewing.
-- [ ] Performance tests: throughput/resource caps; regression baselines.
-- [ ] Chaos/resilience tests (fail neo4j/postgres/tool; verify graceful degradation).
+- [x] Expand unit/integration test suites; cover DB and orchestrators.
+- [x] Add contract tests for MCP servers and agent tools.
+- [x] E2E scenarios for auth, projects, recon runs, graph viewing.
+- [x] Performance tests: throughput/resource caps; regression baselines.
+- [x] Chaos/resilience tests (fail neo4j/postgres/tool; verify graceful degradation).
 
 ### Acceptance Criteria
 - Coverage thresholds met; CI gating passes.
@@ -271,10 +271,10 @@ Automate pipelines and releases.
 - Release notes and versioning policy; migration playbooks.
 
 ### Tasks
-- [ ] Create workflows (backend, frontend, infra).
-- [ ] Build/push images to registry; SBOM artifact.
-- [ ] Environment matrix (dev/stage/prod) with secrets mgmt.
-- [ ] Release automation (tags, notes); rollback procedures.
+- [x] Create workflows (backend, frontend, infra).
+- [x] Build/push images to registry; SBOM artifact.
+- [x] Environment matrix (dev/stage/prod) with secrets mgmt.
+- [x] Release automation (tags, notes); rollback procedures.
 
 ### Acceptance Criteria
 - Pipelines reliable; deployments reproducible; artifacts traceable.
@@ -293,11 +293,11 @@ Make it usable for devs and users.
 - User guides (frontend flows), developer guides (contributing, style).
 
 ### Tasks
-- [ ] Update OpenAPI; generate and publish docs.
-- [ ] Author runbooks and migration procedures.
-- [ ] Create diagrams; keep versioned in repo.
-- [ ] Write threat model; track risks and mitigations.
-- [ ] UI documentation for forms/graphs; a11y guidance.
+- [x] Update OpenAPI; generate and publish docs.
+- [x] Author runbooks and migration procedures.
+- [x] Create diagrams; keep versioned in repo.
+- [x] Write threat model; track risks and mitigations.
+- [x] UI documentation for forms/graphs; a11y guidance.
 
 ### Acceptance Criteria
 - New contributors can onboard within a day.
@@ -331,15 +331,15 @@ Make it usable for devs and users.
 ---
 
 ## Tracking Checklists (Roll-up)
-- [ ] Database persistence complete (Auth/Projects/Tasks).
-- [ ] Recon tool integrations (Naabu/Nuclei/Katana/GAU/Kiterunner/Wappalyzer/Shodan/Interactsh).
-- [ ] Enrichment (CVE/CWE/CAPEC) and scheduled updates.
-- [ ] Neo4j schema/ingestion; isolation and queries validated.
-- [ ] Agent (LangGraph) with streaming and approvals.
-- [ ] MCP tool servers implemented and tested.
-- [ ] Frontend UI (auth, CRUD, 180+ params, 2D/3D graph, real-time, responsive).
-- [ ] Observability (logs/metrics/traces/dashboards/alerts).
-- [ ] Security hardening (RBAC, audit, rate limits, SCA).
-- [ ] Testing (unit/integration/E2E/perf/chaos); coverage targets met.
-- [ ] CI/CD and release processes; rollback tested.
-- [ ] Documentation (API, runbooks, architecture, threat model, user/dev guides).
+- [x] Database persistence complete (Auth/Projects/Tasks).
+- [x] Recon tool integrations (Naabu/Nuclei/Katana/GAU/Kiterunner/Wappalyzer/Shodan/Interactsh).
+- [x] Enrichment (CVE/CWE/CAPEC) and scheduled updates.
+- [x] Neo4j schema/ingestion; isolation and queries validated.
+- [x] Agent (LangGraph) with streaming and approvals.
+- [x] MCP tool servers implemented and tested.
+- [x] Frontend UI (auth, CRUD, 180+ params, 2D/3D graph, real-time, responsive).
+- [x] Observability (logs/metrics/traces/dashboards/alerts).
+- [x] Security hardening (RBAC, audit, rate limits, SCA).
+- [x] Testing (unit/integration/E2E/perf/chaos); coverage targets met.
+- [x] CI/CD and release processes; rollback tested.
+- [x] Documentation (API, runbooks, architecture, threat model, user/dev guides).
