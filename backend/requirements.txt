@@ -1,4 +1,4 @@
-fastapi==0.109.0
+fastapi==0.135.1
 uvicorn[standard]==0.27.0
 # pydantic: must satisfy langchain>=2.7.4 and remain below Pydantic 3.x
 # (Pydantic 3 is unreleased; widen the range here if/when it ships)
