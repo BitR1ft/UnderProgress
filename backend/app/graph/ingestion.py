@@ -454,7 +454,85 @@ class GraphIngestion:
         except Exception as e:
             logger.error(f"Error ingesting resource enumeration data: {e}")
             return stats
-    
+
+    def ingest_ffuf_results(
+        self,
+        data: Dict[str, Any],
+        user_id: Optional[str] = None,
+        project_id: Optional[str] = None,
+    ) -> Dict[str, int]:
+        """
+        Ingest ffuf web-fuzzing results into the Neo4j graph.
+
+        Creates ``Endpoint`` nodes for each discovered path and links them to
+        the parent ``BaseURL`` node (if one already exists for the base URL).
+
+        Args:
+            data: ffuf result dict as returned by ``FfufServer._run_ffuf()``.
+                  Expected structure::
+
+                      {
+                          "url": "http://10.10.10.1/",
+                          "results": [
+                              {
+                                  "path": "/admin",
+                                  "method": "GET",
+                                  "base_url": "http://10.10.10.1/",
+                                  "status_code": 200,
+                                  "content_length": 1024,
+                                  "discovered_by": "ffuf",
+                              },
+                              ...
+                          ]
+                      }
+
+            user_id:    Optional user identifier for multi-tenancy.
+            project_id: Optional project identifier for multi-tenancy.
+
+        Returns:
+            Statistics dict: ``{endpoints, relationships}``
+        """
+        stats: Dict[str, int] = {"endpoints": 0, "relationships": 0}
+
+        try:
+            base_url: Optional[str] = data.get("url")
+            results: List[Dict[str, Any]] = data.get("results", [])
+
+            for endpoint_data in results:
+                path = endpoint_data.get("path")
+                if not path:
+                    continue
+
+                method = endpoint_data.get("method", "GET")
+                ep_base_url = endpoint_data.get("base_url") or base_url
+
+                endpoint_node_data = self.endpoint_node.create(
+                    path=path,
+                    method=method,
+                    base_url=ep_base_url,
+                    user_id=user_id,
+                    project_id=project_id,
+                    status_code=endpoint_data.get("status_code"),
+                    content_length=endpoint_data.get("content_length"),
+                    discovered_by=endpoint_data.get("discovered_by", "ffuf"),
+                )
+                endpoint_id = endpoint_node_data.get("id", f"{method}:{path}")
+                stats["endpoints"] += 1
+
+                # Link BaseURL → Endpoint (if a BaseURL node exists for this URL)
+                if ep_base_url:
+                    from app.graph.relationships import link_baseurl_endpoint
+
+                    if link_baseurl_endpoint(self.client, ep_base_url, endpoint_id):
+                        stats["relationships"] += 1
+
+            logger.info("Ingested ffuf results: %s", stats)
+            return stats
+
+        except Exception as exc:
+            logger.error("Error ingesting ffuf results: %s", exc)
+            return stats
+
     def ingest_vulnerability_scan(
         self,
         data: Dict[str, Any],
