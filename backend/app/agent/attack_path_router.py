@@ -44,6 +44,8 @@ class AttackPathRouter:
         AttackCategory.WEB_APP_ATTACK: [
             "sql injection", "sqli", "xss", "cross-site", "web app",
             "webapp", "csrf", "ssrf", "injection", "web application",
+            "directory", "fuzz", "ffuf", "gobuster", "dirb", "dirbuster",
+            "hidden", "path", "endpoint discovery",
         ],
         AttackCategory.PRIVILEGE_ESCALATION: [
             "privilege escalation", "privesc", "priv esc", "root",
@@ -90,7 +92,7 @@ class AttackPathRouter:
             "hydra", "john", "hashcat",
         ],
         AttackCategory.WEB_APP_ATTACK: [
-            "sqlmap", "nikto", "burp", "nuclei", "curl",
+            "sqlmap", "nikto", "burp", "nuclei", "curl", "ffuf",
         ],
         AttackCategory.PRIVILEGE_ESCALATION: [
             "linpeas", "winpeas", "metasploit",

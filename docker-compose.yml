@@ -250,6 +250,7 @@ services:
       - "8001:8001"  # Curl MCP Server
       - "8002:8002"  # Nuclei MCP Server
       - "8003:8003"  # Metasploit MCP Server
+      - "8004:8004"  # ffuf Web Fuzzing MCP Server (Week 2 Betterment Plan)
     volumes:
       - kali-tools-data:/root
       - scan-results:/results

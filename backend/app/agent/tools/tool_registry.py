@@ -174,7 +174,10 @@ def create_default_registry() -> ToolRegistry:
         SessionManagerTool,
         FileOperationsTool,
         SystemEnumerationTool,
-        PrivilegeEscalationTool
+        PrivilegeEscalationTool,
+        FfufFuzzDirsTool,
+        FfufFuzzFilesTool,
+        FfufFuzzParamsTool,
     )
     
     registry = ToolRegistry()
@@ -252,7 +255,23 @@ def create_default_registry() -> ToolRegistry:
         PrivilegeEscalationTool(),
         allowed_phases=[Phase.POST_EXPLOITATION]
     )
-    
+
+    # Week 2 betterment plan — ffuf web fuzzing (INFORMATIONAL + EXPLOITATION)
+    registry.register_tool(
+        FfufFuzzDirsTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+
+    registry.register_tool(
+        FfufFuzzFilesTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+
+    registry.register_tool(
+        FfufFuzzParamsTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+
     logger.info(f"Created default tool registry with {len(registry.list_all_tools())} tools")
     
     return registry

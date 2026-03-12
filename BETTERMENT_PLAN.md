@@ -276,46 +276,46 @@ The current system is better described as a **semi-autonomous recon-to-exploitat
 **Goal**: Enable the agent to discover hidden directories and files — essential for web-based HTB boxes.
 
 - **Day 8**: Design ffuf MCP server
-  - [ ] Create `backend/app/mcp/servers/ffuf_server.py`
-  - [ ] Define `fuzz_dirs`, `fuzz_files`, `fuzz_params` tools
-  - [ ] Add input validation (block localhost, internal IPs by default)
-  - [ ] Plan wordlist strategy (SecLists integration)
+  - [x] Create `backend/app/mcp/servers/ffuf_server.py`
+  - [x] Define `fuzz_dirs`, `fuzz_files`, `fuzz_params` tools
+  - [x] Add input validation (block localhost, internal IPs by default)
+  - [x] Plan wordlist strategy (SecLists integration)
 
 - **Day 9**: Implement ffuf MCP server
-  - [ ] `fuzz_dirs`: Directory brute-force with configurable wordlist, extensions, rate
-  - [ ] `fuzz_files`: File discovery with extension filtering
-  - [ ] `fuzz_params`: GET/POST parameter fuzzing
-  - [ ] Output normalization to canonical `Endpoint` schema
+  - [x] `fuzz_dirs`: Directory brute-force with configurable wordlist, extensions, rate
+  - [x] `fuzz_files`: File discovery with extension filtering
+  - [x] `fuzz_params`: GET/POST parameter fuzzing
+  - [x] Output normalization to canonical `Endpoint` schema
 
 - **Day 10**: Register ffuf MCP server in Docker
-  - [ ] Add ffuf server to `start-mcp-servers.sh`
-  - [ ] Add port 8004 in `docker-compose.yml`
-  - [ ] Verify ffuf binary path in Kali container
-  - [ ] Test server startup
+  - [x] Add ffuf server to `start-mcp-servers.sh`
+  - [x] Add port 8004 in `docker-compose.yml`
+  - [x] Verify ffuf binary path in Kali container
+  - [x] Test server startup
 
 - **Day 11**: Create ffuf agent tool adapter
-  - [ ] Create `FfufTool` in `backend/app/agent/tools/tool_adapters.py`
-  - [ ] Register in `ToolRegistry` for `INFORMATIONAL` phase
-  - [ ] Add to `AttackPathRouter.WEB_APP_ATTACK` category
-  - [ ] Write 5 unit tests for tool adapter
+  - [x] Create `FfufTool` in `backend/app/agent/tools/tool_adapters.py`
+  - [x] Register in `ToolRegistry` for `INFORMATIONAL` phase
+  - [x] Add to `AttackPathRouter.WEB_APP_ATTACK` category
+  - [x] Write 5 unit tests for tool adapter
 
 - **Day 12**: Integrate ffuf results into Neo4j
-  - [ ] Extend `graph/ingestion.py` with `ingest_ffuf_results()`
-  - [ ] Create `Endpoint` nodes for discovered paths
-  - [ ] Link to parent `BaseURL` node
-  - [ ] Add `discovered_by: ffuf` property
+  - [x] Extend `graph/ingestion.py` with `ingest_ffuf_results()`
+  - [x] Create `Endpoint` nodes for discovered paths
+  - [x] Link to parent `BaseURL` node
+  - [x] Add `discovered_by: ffuf` property
 
 - **Day 13**: Add SecLists wordlist selection
-  - [ ] Add `wordlist` enum parameter: `common`, `raft-medium`, `raft-large`, `api-endpoints`
-  - [ ] Map enum values to SecLists paths in `/usr/share/wordlists/SecLists/`
-  - [ ] Default to `common` (fastest, covers 80% of cases)
-  - [ ] Write wordlist selection tests
+  - [x] Add `wordlist` enum parameter: `common`, `raft-medium`, `raft-large`, `api-endpoints`
+  - [x] Map enum values to SecLists paths in `/usr/share/wordlists/SecLists/`
+  - [x] Default to `common` (fastest, covers 80% of cases)
+  - [x] Write wordlist selection tests
 
 - **Day 14**: Testing and documentation
-  - [ ] Write 10 integration tests for ffuf server
-  - [ ] Test against `http://testphp.vulnweb.com`
-  - [ ] Update `docs/API_REFERENCE.md` with ffuf endpoints
-  - [ ] Update `docs/AGENT_ARCHITECTURE.md` with new tool
+  - [x] Write 10 integration tests for ffuf server
+  - [x] Test against `http://testphp.vulnweb.com`
+  - [x] Update `docs/API_REFERENCE.md` with ffuf endpoints
+  - [x] Update `docs/AGENT_ARCHITECTURE.md` with new tool
 
 ---
 

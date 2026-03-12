@@ -44,6 +44,9 @@ from .tool_adapters import (
     CVELookupTool,
 )
 
+# Week 2 betterment plan — ffuf web fuzzing tools (Days 8-11)
+from .ffuf_tool import FfufFuzzDirsTool, FfufFuzzFilesTool, FfufFuzzParamsTool
+
 __all__ = [
     # Base
     "BaseTool",
@@ -89,4 +92,8 @@ __all__ = [
     "VulnerabilityLookupTool",
     "ExploitSearchTool",
     "CVELookupTool",
+    # Week 2 betterment plan — ffuf (Days 8-11)
+    "FfufFuzzDirsTool",
+    "FfufFuzzFilesTool",
+    "FfufFuzzParamsTool",
 ]
