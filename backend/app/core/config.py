@@ -61,6 +61,18 @@ class Settings(BaseSettings):
     OPENAI_MODEL: str = "gpt-4-turbo-preview"
     ANTHROPIC_API_KEY: str = ""
     
+    # AutoChain — automated pentest pipeline
+    # Maximum risk level auto-approved without human confirmation.
+    # Values: none | low | medium | high | critical
+    # Use 'critical' for HTB lab mode (approves all exploits automatically).
+    # Use 'high' to auto-approve up to high-risk actions only.
+    AUTO_APPROVE_RISK_LEVEL: str = "none"
+
+    # MCP server URLs (overridable for testing / custom deployments)
+    NAABU_MCP_URL: str = "http://kali-tools:8000"
+    NUCLEI_MCP_URL: str = "http://kali-tools:8002"
+    MSF_MCP_URL: str = "http://kali-tools:8003"
+
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "json"

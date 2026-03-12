@@ -228,46 +228,46 @@ The current system is better described as a **semi-autonomous recon-to-exploitat
 **Goal**: Build an autonomous pipeline that chains recon → exploitation without manual steps.
 
 - **Day 1**: Design `AutoChain` orchestrator class
-  - [ ] Define `ScanPlan` dataclass (target, phase, tools, outputs)
-  - [ ] Define `ChainResult` dataclass with next-step recommendations
-  - [ ] Map recon outputs to exploit inputs (ports → exploit candidates)
-  - [ ] Write unit tests for chain logic
+  - [x] Define `ScanPlan` dataclass (target, phase, tools, outputs)
+  - [x] Define `ChainResult` dataclass with next-step recommendations
+  - [x] Map recon outputs to exploit inputs (ports → exploit candidates)
+  - [x] Write unit tests for chain logic
 
 - **Day 2**: Implement recon-to-exploit mapping
-  - [ ] Parse Naabu output → identify service on each port
-  - [ ] Map service + version → CVE candidates (using Nuclei results + NVD)
-  - [ ] Map CVE → Metasploit module (using `search_modules` tool)
-  - [ ] Write `get_exploit_candidates(port_scan_result)` function
+  - [x] Parse Naabu output → identify service on each port
+  - [x] Map service + version → CVE candidates (using Nuclei results + NVD)
+  - [x] Map CVE → Metasploit module (using `search_modules` tool)
+  - [x] Write `get_exploit_candidates(port_scan_result)` function
 
 - **Day 3**: Implement AutoChain Step 1 (Recon)
-  - [ ] Auto-trigger: `naabu_scan → nmap_service_detect → tech_detect`
-  - [ ] Persist results to Neo4j and return structured `ScanPlan`
-  - [ ] Add `POST /api/autochain/start` endpoint
-  - [ ] Write integration test with mock scan data
+  - [x] Auto-trigger: `naabu_scan → nmap_service_detect → tech_detect`
+  - [x] Persist results to Neo4j and return structured `ScanPlan`
+  - [x] Add `POST /api/autochain/start` endpoint
+  - [x] Write integration test with mock scan data
 
 - **Day 4**: Implement AutoChain Step 2 (Vulnerability Discovery)
-  - [ ] Auto-trigger: Nuclei scan on discovered HTTP services
-  - [ ] Auto-trigger: Searchsploit/NVD lookup for detected service versions
-  - [ ] Score and rank exploit candidates by CVSS + Metasploit module availability
-  - [ ] Write tests for scoring logic
+  - [x] Auto-trigger: Nuclei scan on discovered HTTP services
+  - [x] Auto-trigger: Searchsploit/NVD lookup for detected service versions
+  - [x] Score and rank exploit candidates by CVSS + Metasploit module availability
+  - [x] Write tests for scoring logic
 
 - **Day 5**: Implement AutoChain Step 3 (Exploitation)
-  - [ ] Auto-configure Metasploit module from exploit candidate
-  - [ ] Add configurable `auto_approve_low_risk` flag to bypass approval for low-risk actions
-  - [ ] Implement `ExploitPlan` with fallback exploit list
-  - [ ] Test with vsftpd_234_backdoor scenario
+  - [x] Auto-configure Metasploit module from exploit candidate
+  - [x] Add configurable `auto_approve_low_risk` flag to bypass approval for low-risk actions
+  - [x] Implement `ExploitPlan` with fallback exploit list
+  - [x] Test with vsftpd_234_backdoor scenario
 
 - **Day 6**: Implement AutoChain Step 4 (Post-Exploitation)
-  - [ ] On session open: auto-run sysinfo, whoami, id
-  - [ ] Auto-detect OS and escalation candidates
-  - [ ] Auto-search `/home/*/user.txt` and `/root/root.txt`
-  - [ ] Return flag content in `ChainResult`
+  - [x] On session open: auto-run sysinfo, whoami, id
+  - [x] Auto-detect OS and escalation candidates
+  - [x] Auto-search `/home/*/user.txt` and `/root/root.txt`
+  - [x] Return flag content in `ChainResult`
 
 - **Day 7**: AutoChain API + Tests
-  - [ ] `GET /api/autochain/{chain_id}/status` — stream progress via SSE
-  - [ ] `GET /api/autochain/{chain_id}/flags` — return captured flags
-  - [ ] Write E2E test simulating full HTB Easy box solve
-  - [ ] Document `AutoChain` API in `docs/API_REFERENCE.md`
+  - [x] `GET /api/autochain/{chain_id}/status` — stream progress via SSE
+  - [x] `GET /api/autochain/{chain_id}/flags` — return captured flags
+  - [x] Write E2E test simulating full HTB Easy box solve
+  - [x] Document `AutoChain` API in `docs/API_REFERENCE.md`
 
 ---
 
