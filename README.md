@@ -1,6 +1,6 @@
-# AutoPenTest AI v1.0
+# AutoPenTest AI v1.1
 
-> **Version 1.0.0** — Year 1 Complete ✅
+> **Version 1.1.0** — Betterment Plan Weeks 1-10 Complete ✅
 
 An agentic, fully-automated penetration testing framework that autonomously executes the entire penetration testing kill chain — from reconnaissance to exploitation to reporting.
 
@@ -9,8 +9,12 @@ An agentic, fully-automated penetration testing framework that autonomously exec
 AutoPenTest AI is a Linux-based, AI-powered offensive security framework that, given a single target, autonomously executes:
 - **Reconnaissance**: Multi-phase discovery (5 phases), web/API detection, technology fingerprinting
 - **Exploitation**: CVE-based attacks, web vulnerabilities, credential attacks with human-in-the-loop safety
-- **Privilege Escalation**: Automated user and root flag acquisition (Linux/Windows)
-- **Post-Exploitation**: System enumeration, credential harvesting, evidence collection
+- **Web Application Attacks**: SQLMap SQLi detection/exploitation, Nikto web scanning, WPScan CMS detection
+- **Privilege Escalation**: Automated user and root flag acquisition with LinPEAS/WinPEAS enumeration
+- **Post-Exploitation**: Hash cracking (John/Hashcat), credential reuse pipeline, SSH key extraction
+- **Active Directory**: Kerbrute, enum4linux-ng, Impacket (ASREPRoast/Kerberoast), Pass-the-Hash, LDAP, CrackMapExec
+- **Network Services**: SSH login, reverse shell generation, anonymous FTP, SNMP enumeration
+- **ML-based Intent Classification**: Keyword/ML/LLM/Hybrid classifiers with confidence scoring
 - **Report Generation**: Structured engagement summaries with remediation guidance
 
 ### Target Success Rates
@@ -158,7 +162,7 @@ npm test
 
 ## 📋 Project Status
 
-**Current Phase**: v1.0.0 Release — Year 1 Complete ✅
+**Current Phase**: v1.1.0 Release — Betterment Plan Weeks 1-10 Complete ✅
 
 **All 12 Development Months Complete**:
 - ✅ Month 1: Foundation & Environment Setup
@@ -174,34 +178,37 @@ npm test
 - ✅ Month 11: MCP Tool Servers (Naabu, Curl, Nuclei, Metasploit, Query Graph, Web Search)
 - ✅ Month 12: AI Agent Exploitation (Attack Paths, Payload Delivery, Session Management)
 
-**v1.0 Enhancements**:
-- ✅ Enhanced AI reasoning with chain-of-thought prompts and structured analysis
-- ✅ Confidence-scored intent classification with ranked alternatives
-- ✅ Context summarization to prevent LLM context overflow
-- ✅ Multi-line LLM response parsing for complex reasoning
-- ✅ Structured error recovery with tool-specific recovery suggestions
-- ✅ Comprehensive user manual and release documentation
+**Betterment Plan v1.1 Enhancements**:
+- ✅ Week 1-2: ffuf web fuzzing MCP server (port 8004) + agent adapters
+- ✅ Week 3: SQLMap MCP server (port 8005) + agent adapters (detect/dump/tables/columns)
+- ✅ Week 4: LinPEAS/WinPEAS tools + Hash Cracker MCP server (port 8006) + credential reuse pipeline
+- ✅ Week 5: QueryGraphTool multi-tenancy fix + AUTO_APPROVE_RISK_LEVEL env var
+- ✅ Week 6: SearchSploit + Nikto MCP server (port 8007) + WPScan + CMS detection chain
+- ✅ Week 7: SSH key extraction + SSH login + reverse shell generation + FTP + SNMP tools
+- ✅ Week 8: Active Directory tools (Kerbrute, enum4linux-ng, Impacket, PtH, LDAP, CrackMapExec)
+- ✅ Week 9-10: ML-based intent classifier (KeywordClassifier, MLClassifier, LLMClassifier, HybridClassifier)
 
-### Year 1 Statistics
+### v1.1 Statistics
 
 | Metric | Value |
 |--------|-------|
-| Development Duration | 12 months |
-| Total Files | 100+ |
-| Lines of Code | 15,000+ |
-| Backend (Python) | 8,000+ |
+| Development Duration | 12 months + betterment |
+| Total Files | 130+ |
+| Lines of Code | 20,000+ |
+| Backend (Python) | 12,000+ |
 | Frontend (TypeScript) | 5,000+ |
-| Documentation | 2,000+ |
-| Backend Test Cases | 420+ |
+| Documentation | 3,000+ |
+| Backend Test Cases | 850+ |
 | Frontend Test Cases | 87 |
-| MCP Servers | 4 |
-| Agent Tools | 14 |
+| MCP Servers | 7 |
+| Agent Tools | 35+ |
 | Neo4j Node Types | 17+ |
 | API Endpoints | 15+ |
 | Docker Services | 6 |
 
 See [Release Notes](RELEASE_NOTES.md) for detailed v1.0.0 changelog.
 See [User Manual](docs/USER_MANUAL.md) for usage instructions.
+See [Betterment Plan](BETTERMENT_PLAN.md) for the full improvement roadmap.
 
 ## 🔒 Security & Ethics
 
@@ -221,10 +228,12 @@ MIT License — See [LICENSE](LICENSE) for details.
 
 | Quarter | Focus |
 |---------|-------|
-| Q1 (Months 13–15) | ML-based intent classification, API auth hardening, rate limiting |
-| Q2 (Months 16–18) | Dynamic payload generation, multi-target campaigns, automated tool chaining |
-| Q3 (Months 19–21) | Automated report generation (PDF/HTML), compliance mapping (PCI-DSS, HIPAA, NIST) |
-| Q4 (Months 22–24) | Cloud security (AWS/Azure/GCP), container scanning, horizontal scaling |
+| Betterment Weeks 11-12 | HTB-specific attack templates (Easy/Medium), flag capture automation |
+| Betterment Weeks 13-16 | AutoChain autonomous workflow, self-healing, timeout/retry logic |
+| Q1 (Months 13–15) | API auth hardening, rate limiting, dynamic payload generation |
+| Q2 (Months 16–18) | Multi-target campaigns, automated report generation (PDF/HTML) |
+| Q3 (Months 19–21) | Compliance mapping (PCI-DSS, HIPAA, NIST), horizontal scaling |
+| Q4 (Months 22–24) | Cloud security (AWS/Azure/GCP), container scanning |
 
 ## 👨‍💻 Author
 

@@ -10,6 +10,10 @@ from .curl_server import CurlServer
 from .metasploit_server import MetasploitServer
 from .graph_server import GraphQueryServer
 from .web_search_server import WebSearchServer
+from .ffuf_server import FfufServer
+from .sqlmap_server import SQLMapServer
+from .cracker_server import CrackerServer
+from .nikto_server import NiktoServer
 
 __all__ = [
     "NaabuServer",
@@ -18,4 +22,8 @@ __all__ = [
     "MetasploitServer",
     "GraphQueryServer",
     "WebSearchServer",
+    "FfufServer",
+    "SQLMapServer",
+    "CrackerServer",
+    "NiktoServer",
 ]

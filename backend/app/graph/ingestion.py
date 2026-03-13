@@ -768,3 +768,70 @@ def ingest_mitre_data(
     """Ingest MITRE data."""
     ingestion = GraphIngestion(neo4j_client)
     return ingestion.ingest_mitre_data(data, user_id, project_id)
+
+
+
+async def ingest_sqli_finding(
+    url: str,
+    parameters: list,
+    dbms: str,
+    technique: str = None,
+    project_id: str = None,
+    user_id: str = None,
+) -> None:
+    """
+    Persist a SQL injection finding to the Neo4j attack graph.
+
+    Creates a Vulnerability node tagged with category='sqli' and links it
+    to the Endpoint node for the target URL.  Called by SQLMapDetectTool
+    when a project_id is available.
+
+    This is a standalone async wrapper that creates its own Neo4j driver
+    connection using the application settings.
+    """
+    try:
+        from app.core.config import settings
+        from neo4j import AsyncGraphDatabase
+
+        driver = AsyncGraphDatabase.driver(
+            settings.NEO4J_URI,
+            auth=(settings.NEO4J_USER, settings.NEO4J_PASSWORD),
+        )
+
+        cypher = """
+        MERGE (vuln:Vulnerability {url: $url, category: 'sqli', type: 'SQL Injection'})
+        SET
+          vuln.parameters  = $parameters,
+          vuln.dbms        = $dbms,
+          vuln.technique   = $technique,
+          vuln.severity    = 'high',
+          vuln.project_id  = $project_id,
+          vuln.user_id     = $user_id,
+          vuln.discovered_at = timestamp()
+        WITH vuln
+        MERGE (ep:Endpoint {url: $url})
+        SET
+          ep.project_id = $project_id,
+          ep.user_id    = $user_id
+        MERGE (ep)-[:HAS_VULNERABILITY]->(vuln)
+        RETURN vuln
+        """
+
+        async with driver.session() as session:
+            await session.run(
+                cypher,
+                url=url,
+                parameters=parameters,
+                dbms=dbms,
+                technique=technique or "unknown",
+                project_id=project_id or "",
+                user_id=user_id or "",
+            )
+
+        await driver.close()
+
+    except Exception as exc:
+        import logging as _logging
+        _logging.getLogger(__name__).warning(
+            "ingest_sqli_finding: %s", exc
+        )

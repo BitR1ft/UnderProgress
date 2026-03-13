@@ -251,6 +251,9 @@ services:
       - "8002:8002"  # Nuclei MCP Server
       - "8003:8003"  # Metasploit MCP Server
       - "8004:8004"  # ffuf Web Fuzzing MCP Server (Week 2 Betterment Plan)
+      - "8005:8005"  # SQLMap MCP Server (Week 3 Betterment Plan)
+      - "8006:8006"  # Hash Cracker MCP Server (Week 4 Betterment Plan)
+      - "8007:8007"  # Nikto MCP Server (Week 6 Betterment Plan)
     volumes:
       - kali-tools-data:/root
       - scan-results:/results

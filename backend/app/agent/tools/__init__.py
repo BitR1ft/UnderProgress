@@ -47,6 +47,48 @@ from .tool_adapters import (
 # Week 2 betterment plan — ffuf web fuzzing tools (Days 8-11)
 from .ffuf_tool import FfufFuzzDirsTool, FfufFuzzFilesTool, FfufFuzzParamsTool
 
+# Week 3 betterment plan — SQLMap agent adapter (Days 19-21)
+from .sqlmap_tool import (
+    SQLMapDetectTool,
+    SQLMapDatabasesTool,
+    SQLMapTablesTool,
+    SQLMapColumnsTool,
+    SQLMapDumpTool,
+)
+
+# Week 4 betterment plan — Post-exploitation extended + hash cracking (Days 22-28)
+from .post_exploitation_extended import (
+    LinPEASTool,
+    WinPEASTool,
+    HashCrackTool,
+    CredentialReuseTool,
+    FlagCaptureTool,
+)
+
+# Week 6 betterment plan — SearchSploit + CMS tools (Days 31-37)
+from .searchsploit_tool import SearchSploitTool
+from .cms_tools import WPScanTool, NiktoAgentTool
+
+# Week 7 betterment plan — Network service tools (Days 38-44)
+from .network_service_tools import (
+    SSHLoginTool,
+    SSHKeyExtractTool,
+    ReverseShellTool,
+    SNMPTool,
+    AnonymousFTPTool,
+)
+
+# Week 8 betterment plan — Active Directory tools (Days 45-51)
+from .active_directory_tools import (
+    KerbrouteTool,
+    Enum4LinuxTool,
+    ASREPRoastTool,
+    KerberoastTool,
+    PassTheHashTool,
+    LDAPEnumTool,
+    CrackMapExecTool,
+)
+
 __all__ = [
     # Base
     "BaseTool",
@@ -96,4 +138,34 @@ __all__ = [
     "FfufFuzzDirsTool",
     "FfufFuzzFilesTool",
     "FfufFuzzParamsTool",
+    # Week 3 betterment plan — SQLMap (Days 19-21)
+    "SQLMapDetectTool",
+    "SQLMapDatabasesTool",
+    "SQLMapTablesTool",
+    "SQLMapColumnsTool",
+    "SQLMapDumpTool",
+    # Week 4 betterment plan — Post-exploitation extended (Days 22-28)
+    "LinPEASTool",
+    "WinPEASTool",
+    "HashCrackTool",
+    "CredentialReuseTool",
+    "FlagCaptureTool",
+    # Week 6 betterment plan — SearchSploit + CMS (Days 31-37)
+    "SearchSploitTool",
+    "WPScanTool",
+    "NiktoAgentTool",
+    # Week 7 betterment plan — Network service tools (Days 38-44)
+    "SSHLoginTool",
+    "SSHKeyExtractTool",
+    "ReverseShellTool",
+    "SNMPTool",
+    "AnonymousFTPTool",
+    # Week 8 betterment plan — Active Directory tools (Days 45-51)
+    "KerbrouteTool",
+    "Enum4LinuxTool",
+    "ASREPRoastTool",
+    "KerberoastTool",
+    "PassTheHashTool",
+    "LDAPEnumTool",
+    "CrackMapExecTool",
 ]

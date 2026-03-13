@@ -3,14 +3,53 @@ Attack Path Router System
 
 Routes user intent to appropriate attack strategies with classification
 and approval controls for the AI penetration testing framework.
+
+Week 9-10 update: Integrates the ML/LLM hybrid intent classifier as the
+primary routing engine, with keyword matching as a fallback.  The classifier
+mode is controlled by the ``CLASSIFIER_MODE`` environment variable:
+  keyword  (default) — fast regex matching, no dependencies
+  ml       — scikit-learn multi-label SVM
+  llm      — GPT-4 structured output
+  hybrid   — ML + LLM merged (recommended for production)
+
+Week 5 update: Respects AUTO_APPROVE_RISK_LEVEL environment variable to
+automatically approve attack categories below the configured risk threshold.
+  AUTO_APPROVE_RISK_LEVEL=none    — all dangerous categories require approval
+  AUTO_APPROVE_RISK_LEVEL=low     — only approve low-risk attacks
+  AUTO_APPROVE_RISK_LEVEL=medium  — approve medium + low risk
+  AUTO_APPROVE_RISK_LEVEL=high    — approve high + below (HTB lab mode)
+  AUTO_APPROVE_RISK_LEVEL=critical— approve everything (dangerous!)
 """
 
+import os
 from enum import Enum
-from typing import Dict, List
+from typing import Dict, List, Optional
 import logging
 import re
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Risk ordering for AUTO_APPROVE_RISK_LEVEL
+# ---------------------------------------------------------------------------
+
+_RISK_ORDER = ["none", "low", "medium", "high", "critical"]
+
+
+def _auto_approve_threshold() -> str:
+    """Read AUTO_APPROVE_RISK_LEVEL env var (default: 'none')."""
+    return os.environ.get("AUTO_APPROVE_RISK_LEVEL", "none").lower()
+
+
+def _risk_is_auto_approved(risk_level: str) -> bool:
+    """Return True if *risk_level* is within the configured auto-approve threshold."""
+    threshold = _auto_approve_threshold()
+    if threshold == "none":
+        return False
+    try:
+        return _RISK_ORDER.index(risk_level) <= _RISK_ORDER.index(threshold)
+    except ValueError:
+        return False
 
 
 class AttackCategory(str, Enum):
@@ -89,28 +128,41 @@ class AttackPathRouter:
             "metasploit", "searchsploit", "nuclei",
         ],
         AttackCategory.BRUTE_FORCE: [
-            "hydra", "john", "hashcat",
+            "hydra", "hash_crack", "john", "hashcat",
         ],
         AttackCategory.WEB_APP_ATTACK: [
-            "sqlmap", "nikto", "burp", "nuclei", "curl", "ffuf",
+            # primary tool names expected by tests
+            "sqlmap", "nuclei",
+            # detailed tool adapter names
+            "sqlmap_detect", "sqlmap_databases", "sqlmap_dump",
+            "nikto_scan", "wpscan", "curl",
+            "ffuf_fuzz_dirs", "ffuf_fuzz_files", "ffuf_fuzz_params",
         ],
         AttackCategory.PRIVILEGE_ESCALATION: [
-            "linpeas", "winpeas", "metasploit",
+            # primary tool names expected by tests
+            "linpeas", "metasploit",
+            # detailed tool adapter names
+            "linpeas_scan", "winpeas_scan", "capture_flags",
         ],
         AttackCategory.LATERAL_MOVEMENT: [
-            "metasploit", "crackmapexec", "impacket",
+            # primary tool names expected by tests
+            "metasploit", "impacket",
+            # detailed tool adapter names
+            "crackmapexec_smb", "pass_the_hash",
+            "enum4linux_scan", "ldap_enum", "ssh_login",
         ],
         AttackCategory.PASSWORD_SPRAY: [
-            "crackmapexec", "spray", "hydra",
+            "crackmapexec_smb", "kerbrute_userenum",
+            "credential_reuse", "hydra",
         ],
         AttackCategory.SOCIAL_ENGINEERING: [
             "gophish", "set",
         ],
         AttackCategory.NETWORK_PIVOT: [
-            "chisel", "ligolo", "ssh", "metasploit",
+            "chisel", "ligolo", "ssh_login", "metasploit",
         ],
         AttackCategory.FILE_EXFILTRATION: [
-            "curl", "scp", "netcat",
+            "capture_flags", "curl", "ssh_key_extract",
         ],
         AttackCategory.PERSISTENCE: [
             "metasploit", "cron", "systemctl",
@@ -131,13 +183,20 @@ class AttackPathRouter:
     }
 
     def __init__(self):
-        """Initialize the attack path router."""
-        logger.info("AttackPathRouter initialized")
+        """Initialize the attack path router with ML/LLM classifier."""
+        from app.agent.classification.intent_classifier import IntentClassifier
+        self._classifier = IntentClassifier()
+        logger.info(
+            "AttackPathRouter initialized with classifier mode: %s",
+            os.environ.get("CLASSIFIER_MODE", "keyword"),
+        )
 
     def classify_intent(self, user_message: str) -> AttackCategory:
         """
-        Classify user intent into an attack category using keyword matching
-        with confidence scoring.
+        Classify user intent into an attack category.
+
+        Uses the configured classifier (keyword/ML/LLM/hybrid) to determine
+        the most likely attack category for the given message.
 
         Args:
             user_message: Raw message from the user
@@ -156,59 +215,47 @@ class AttackPathRouter:
             user_message: Raw message from the user
 
         Returns:
-            Dict with 'category', 'confidence' (0.0-1.0), and 'alternatives'
+            Dict with 'category', 'confidence' (0.0-1.0), 'alternatives', and 'all_categories'
         """
-        message_lower = user_message.lower()
-        scores: Dict[AttackCategory, int] = {}
-        total_keywords = 0
+        clf_result = self._classifier.classify(user_message)
 
-        for category, keywords in self.ATTACK_KEYWORDS.items():
-            score = sum(
-                1 for kw in keywords
-                if re.search(r'(?<!\w)' + re.escape(kw) + r'(?!\w)', message_lower)
-            )
-            scores[category] = score
-            total_keywords += score
+        # Map top category string to AttackCategory enum
+        best_category = self._str_to_category(clf_result.top_category)
+        confidence = clf_result.scores.get(clf_result.top_category, 0.0)
 
-        best_category = AttackCategory.WEB_APP_ATTACK
-        best_score = 0
-
-        for category, score in scores.items():
-            if score > best_score:
-                best_score = score
-                best_category = category
-
-        # Calculate confidence combining match ratio and absolute score quality.
-        # A single keyword match across all categories scores 1.0 ratio but low
-        # absolute quality, so we blend the two signals.
-        match_ratio = best_score / total_keywords if total_keywords > 0 else 0.0
-        # Require at least 2 keyword matches for high confidence
-        score_quality = min(best_score / 2.0, 1.0)
-        confidence = (match_ratio + score_quality) / 2.0
-
-        # Collect ranked alternatives (categories with score > 0, excluding best)
-        alternatives = sorted(
-            [
-                {"category": cat.value, "score": sc}
-                for cat, sc in scores.items()
-                if sc > 0 and cat != best_category
-            ],
-            key=lambda x: x["score"],
-            reverse=True,
-        )
+        # Build alternatives list from all matched categories
+        alternatives = []
+        for cat_str in clf_result.categories:
+            if cat_str != clf_result.top_category:
+                alternatives.append({
+                    "category": cat_str,
+                    "score": clf_result.scores.get(cat_str, 0.0),
+                })
 
         logger.info(
-            f"Classified intent as '{best_category.value}' "
-            f"(score={best_score}, confidence={confidence:.2f}, "
-            f"alternatives={len(alternatives)})"
+            "Classified intent as '%s' (confidence=%.2f, method=%s, alternatives=%d)",
+            best_category.value,
+            confidence,
+            clf_result.method,
+            len(alternatives),
         )
 
         return {
             "category": best_category,
             "confidence": confidence,
-            "score": best_score,
+            "score": confidence,
             "alternatives": alternatives,
+            "all_categories": [self._str_to_category(c) for c in clf_result.categories],
+            "method": clf_result.method,
         }
+
+    @staticmethod
+    def _str_to_category(category_str: str) -> "AttackCategory":
+        """Convert a category string to AttackCategory enum, with fallback."""
+        try:
+            return AttackCategory(category_str)
+        except ValueError:
+            return AttackCategory.WEB_APP_ATTACK
 
     def get_attack_plan(
         self, category: AttackCategory, target_info: Dict
@@ -258,13 +305,28 @@ class AttackPathRouter:
         """
         Check whether an attack category requires human approval before execution.
 
+        Respects the ``AUTO_APPROVE_RISK_LEVEL`` environment variable:
+        if the category's risk level is at or below the configured threshold,
+        approval is waived automatically (useful for HTB lab environments).
+
         Args:
             category: The attack category
 
         Returns:
-            True if the category is considered dangerous and needs approval
+            True if the category is considered dangerous and approval is needed
         """
-        return category in self._DANGEROUS_CATEGORIES
+        if category not in self._DANGEROUS_CATEGORIES:
+            return False
+        risk_level = self._RISK_LEVELS.get(category, "high")
+        if _risk_is_auto_approved(risk_level):
+            logger.info(
+                "Auto-approving '%s' (risk=%s, threshold=%s)",
+                category.value,
+                risk_level,
+                _auto_approve_threshold(),
+            )
+            return False
+        return True
 
     # ------------------------------------------------------------------
     # Private helpers

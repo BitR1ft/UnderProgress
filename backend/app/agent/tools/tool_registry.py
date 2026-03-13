@@ -178,6 +178,36 @@ def create_default_registry() -> ToolRegistry:
         FfufFuzzDirsTool,
         FfufFuzzFilesTool,
         FfufFuzzParamsTool,
+        # Week 3 betterment plan — SQLMap
+        SQLMapDetectTool,
+        SQLMapDatabasesTool,
+        SQLMapTablesTool,
+        SQLMapColumnsTool,
+        SQLMapDumpTool,
+        # Week 4 betterment plan — post-exploitation extended
+        LinPEASTool,
+        WinPEASTool,
+        HashCrackTool,
+        CredentialReuseTool,
+        FlagCaptureTool,
+        # Week 6 betterment plan — SearchSploit + CMS
+        SearchSploitTool,
+        WPScanTool,
+        NiktoAgentTool,
+        # Week 7 betterment plan — Network service tools
+        SSHLoginTool,
+        SSHKeyExtractTool,
+        ReverseShellTool,
+        SNMPTool,
+        AnonymousFTPTool,
+        # Week 8 betterment plan — Active Directory
+        KerbrouteTool,
+        Enum4LinuxTool,
+        ASREPRoastTool,
+        KerberoastTool,
+        PassTheHashTool,
+        LDAPEnumTool,
+        CrackMapExecTool,
     )
     
     registry = ToolRegistry()
@@ -270,6 +300,116 @@ def create_default_registry() -> ToolRegistry:
     registry.register_tool(
         FfufFuzzParamsTool(),
         allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+
+    # Week 3 betterment plan — SQLMap
+    registry.register_tool(
+        SQLMapDetectTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        SQLMapDatabasesTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        SQLMapTablesTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        SQLMapColumnsTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        SQLMapDumpTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+
+    # Week 4 betterment plan — post-exploitation extended + hash cracking
+    registry.register_tool(
+        LinPEASTool(),
+        allowed_phases=[Phase.POST_EXPLOITATION]
+    )
+    registry.register_tool(
+        WinPEASTool(),
+        allowed_phases=[Phase.POST_EXPLOITATION]
+    )
+    registry.register_tool(
+        HashCrackTool(),
+        allowed_phases=[Phase.EXPLOITATION, Phase.POST_EXPLOITATION]
+    )
+    registry.register_tool(
+        CredentialReuseTool(),
+        allowed_phases=[Phase.EXPLOITATION, Phase.POST_EXPLOITATION]
+    )
+    registry.register_tool(
+        FlagCaptureTool(),
+        allowed_phases=[Phase.POST_EXPLOITATION]
+    )
+
+    # Week 6 betterment plan — SearchSploit + CMS tools
+    registry.register_tool(
+        SearchSploitTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        WPScanTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        NiktoAgentTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+
+    # Week 7 betterment plan — Network service tools
+    registry.register_tool(
+        SSHLoginTool(),
+        allowed_phases=[Phase.EXPLOITATION, Phase.POST_EXPLOITATION]
+    )
+    registry.register_tool(
+        SSHKeyExtractTool(),
+        allowed_phases=[Phase.POST_EXPLOITATION]
+    )
+    registry.register_tool(
+        ReverseShellTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        SNMPTool(),
+        allowed_phases=[Phase.INFORMATIONAL]
+    )
+    registry.register_tool(
+        AnonymousFTPTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+
+    # Week 8 betterment plan — Active Directory tools
+    registry.register_tool(
+        KerbrouteTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        Enum4LinuxTool(),
+        allowed_phases=[Phase.INFORMATIONAL]
+    )
+    registry.register_tool(
+        ASREPRoastTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        KerberoastTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        PassTheHashTool(),
+        allowed_phases=[Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        LDAPEnumTool(),
+        allowed_phases=[Phase.INFORMATIONAL, Phase.EXPLOITATION]
+    )
+    registry.register_tool(
+        CrackMapExecTool(),
+        allowed_phases=[Phase.EXPLOITATION, Phase.POST_EXPLOITATION]
     )
 
     logger.info(f"Created default tool registry with {len(registry.list_all_tools())} tools")
