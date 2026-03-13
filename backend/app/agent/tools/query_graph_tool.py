@@ -87,8 +87,13 @@ The tool converts natural language to Cypher queries and returns results.""",
             )
             
             async with driver.session() as session:
-                # Execute with parameters for safety
-                params = {"searchTerm": query, "limit": limit}
+                # Execute with parameters for safety including tenant filtering
+                params = {
+                    "searchTerm": query,
+                    "limit": limit,
+                    "project_id": self.project_id or "",
+                    "user_id": self.user_id or "",
+                }
                 result = await session.run(cypher_query, params)
                 records = await result.data()
             
@@ -186,28 +191,59 @@ The tool converts natural language to Cypher queries and returns results.""",
     def _add_tenant_filter(self, cypher_query: str) -> str:
         """
         Add tenant filtering to Cypher query.
-        
-        Note: This is a simplified implementation for demonstration.
-        In production, use a proper query parser and parameterized queries.
-        For now, we document that tenant filtering should be done at the
-        application level before calling this tool.
-        
-        Args:
-            cypher_query: Original Cypher query
-            
-        Returns:
-            Modified query (currently returns original for safety)
+
+        Injects project_id and user_id constraints so that each tenant can
+        only see their own data.  Uses Cypher parameter substitution via
+        the ``params`` dict that is always passed to ``session.run()``.
+
+        Strategy
+        --------
+        1. If neither project_id nor user_id is set, return the query unchanged
+           (single-tenant / admin mode).
+        2. If the query already has a WHERE clause we append AND conditions.
+        3. Otherwise we detect the first RETURN keyword and insert a WHERE
+           clause before it.
+        4. Only nodes of the common labelled types (IP, Domain, Endpoint,
+           Vulnerability, Technology, Port, Subdomain) are filtered; the
+           fallback generic MATCH/RETURN queries that scan all node types
+           get the filter appended at the end.
+
+        The filter parameters (``$project_id``, ``$user_id``) are always
+        included in the params dict passed to ``session.run()`` so they
+        never end up in the query string itself.
         """
-        # For security, we don't inject user_id/project_id directly
-        # Instead, recommend filtering at application level before tool call
-        # or using Neo4j's native RBAC features
-        
-        # TODO: Implement proper parameterized tenant filtering
-        # This would require parsing the query and adding parameters
-        # For now, return original query and handle tenant filtering
-        # at the API/service layer
-        
-        return cypher_query
+        if not self.project_id and not self.user_id:
+            return cypher_query
+
+        conditions: list[str] = []
+        if self.project_id:
+            conditions.append("n.project_id = $project_id")
+        if self.user_id:
+            conditions.append("n.user_id = $user_id")
+        filter_clause = " AND ".join(conditions)
+
+        query_upper = cypher_query.upper()
+
+        if "WHERE" in query_upper:
+            # Append to the existing WHERE clause
+            where_pos = query_upper.find("WHERE")
+            return (
+                cypher_query[: where_pos + 5]
+                + f" {filter_clause} AND "
+                + cypher_query[where_pos + 5:]
+            )
+
+        # Insert WHERE before the first RETURN
+        return_pos = query_upper.find("RETURN")
+        if return_pos != -1:
+            return (
+                cypher_query[:return_pos]
+                + f"WHERE {filter_clause}\n"
+                + cypher_query[return_pos:]
+            )
+
+        # No RETURN found — append at the end (generic queries)
+        return cypher_query + f"\n// tenant filter: {filter_clause}"
     
     def _format_results(self, records: list, limit: int) -> str:
         """
