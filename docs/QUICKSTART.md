@@ -31,9 +31,12 @@ Open `.env` and set **at minimum** these values:
 # Generate with: openssl rand -hex 32
 SECRET_KEY=<your-32-byte-hex-string>
 
-# At least one LLM provider
+# At least one LLM provider (free options: GOOGLE_API_KEY or GROQ_API_KEY)
 OPENAI_API_KEY=sk-...
 # ANTHROPIC_API_KEY=sk-ant-...
+# GOOGLE_API_KEY=AIza...        ← free tier at aistudio.google.com
+# GROQ_API_KEY=gsk_...          ← free tier at console.groq.com
+# OPENROUTER_API_KEY=sk-or-v1-... ← openrouter.ai
 
 # Database passwords (change all defaults)
 POSTGRES_PASSWORD=changeme

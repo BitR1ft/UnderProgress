@@ -354,7 +354,7 @@ class AgentConfigManager:
 
     def set_model(self, provider: str, model_name: str) -> None:
         """Change the LLM provider and model."""
-        allowed_providers = {"openai", "anthropic"}
+        allowed_providers = {"openai", "anthropic", "google", "groq", "openrouter"}
         if provider not in allowed_providers:
             raise ValueError(
                 f"Unknown provider '{provider}'. Allowed: {allowed_providers}"
@@ -385,7 +385,7 @@ class AgentConfigManager:
         Raises:
             ValueError: describing the first problem found
         """
-        allowed_providers = {"openai", "anthropic"}
+        allowed_providers = {"openai", "anthropic", "google", "groq", "openrouter"}
         if cfg.model_provider not in allowed_providers:
             raise ValueError(
                 f"model_provider must be one of {allowed_providers}, "
