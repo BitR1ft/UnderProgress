@@ -171,13 +171,17 @@ The AI agent uses the **ReAct (Reasoning + Acting)** pattern powered by GPT-4 / 
 
 ### Required API Keys
 
-| Key | Purpose | Where to get |
-|-----|---------|-------------|
-| `OPENAI_API_KEY` | GPT-4 AI agent | [platform.openai.com](https://platform.openai.com) |
-| `ANTHROPIC_API_KEY` | Claude fallback | [console.anthropic.com](https://console.anthropic.com) |
-| `GOOGLE_API_KEY` | Gemini fallback (free tier) | [aistudio.google.com](https://aistudio.google.com/app/apikey) |
-| `TAVILY_API_KEY` | OSINT web search (optional) | [app.tavily.com](https://app.tavily.com) |
-| `NVD_API_KEY` | CVE enrichment (optional) | [nvd.nist.gov](https://nvd.nist.gov/developers) |
+**At least one LLM provider is required.** Free-tier options are available:
+
+| Key | Purpose | Free? | Where to get |
+|-----|---------|-------|-------------|
+| `OPENAI_API_KEY` | GPT-4o AI agent | No | [platform.openai.com](https://platform.openai.com) |
+| `ANTHROPIC_API_KEY` | Claude fallback | No | [console.anthropic.com](https://console.anthropic.com) |
+| `GOOGLE_API_KEY` | Gemini (free tier) | ✅ Free | [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| `GROQ_API_KEY` | Llama 3.3 70B (fast, free) | ✅ Free | [console.groq.com](https://console.groq.com/keys) |
+| `OPENROUTER_API_KEY` | 100+ models via one API | Varies | [openrouter.ai](https://openrouter.ai/keys) |
+| `TAVILY_API_KEY` | OSINT web search (optional) | Partial | [app.tavily.com](https://app.tavily.com) |
+| `NVD_API_KEY` | CVE enrichment (optional) | ✅ Free | [nvd.nist.gov](https://nvd.nist.gov/developers) |
 
 ---
 
@@ -193,7 +197,7 @@ cp .env.example .env
 
 # 3. Set required secrets in .env  (minimum required values)
 #    SECRET_KEY  → run: openssl rand -hex 32
-#    At least one LLM provider: OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY
+#    At least one LLM provider: OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, GROQ_API_KEY, or OPENROUTER_API_KEY
 #    GRAFANA_PASSWORD
 #    All *_PASSWORD variables (change defaults)
 
@@ -367,9 +371,13 @@ Copy `.env.example` to `.env` and set the following variables:
 | `OPENAI_API_KEY` | One of these | OpenAI API key for GPT-4 |
 | `ANTHROPIC_API_KEY` | One of these | Anthropic API key for Claude |
 | `GOOGLE_API_KEY` | One of these | Google API key for Gemini (free tier available) |
+| `GROQ_API_KEY` | One of these | Groq API key for Llama 3.3 70B (free tier) |
+| `OPENROUTER_API_KEY` | One of these | OpenRouter API key (access 100+ models) |
 | `OPENAI_MODEL` | No | Default: `gpt-4o` |
 | `ANTHROPIC_MODEL` | No | Default: `claude-3-5-sonnet-20241022` |
 | `GOOGLE_MODEL` | No | Default: `gemini-1.5-flash` |
+| `GROQ_MODEL` | No | Default: `llama-3.3-70b-versatile` |
+| `OPENROUTER_MODEL` | No | Default: `anthropic/claude-3.5-sonnet` |
 | `LANGCHAIN_API_KEY` | No | LangSmith tracing (optional) |
 
 ### AutoChain Pipeline

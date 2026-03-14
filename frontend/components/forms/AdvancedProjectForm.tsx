@@ -731,8 +731,14 @@ export function AdvancedProjectForm({
                   <option value="gpt-3.5-turbo">GPT-3.5 Turbo (OpenAI)</option>
                   <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Anthropic)</option>
                   <option value="claude-3">Claude 3 (Anthropic)</option>
-                  <option value="gemini-1.5-flash">Gemini 1.5 Flash (Google)</option>
+                  <option value="gemini-1.5-flash">Gemini 1.5 Flash (Google — free)</option>
                   <option value="gemini-1.5-pro">Gemini 1.5 Pro (Google)</option>
+                  <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Groq — free)</option>
+                  <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (Groq — free)</option>
+                  <option value="mixtral-8x7b-32768">Mixtral 8x7B (Groq — free)</option>
+                  <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet via OpenRouter</option>
+                  <option value="openai/gpt-4o">GPT-4o via OpenRouter</option>
+                  <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B via OpenRouter</option>
                   <option value="local">Local LLM</option>
                 </Select>
               </div>
