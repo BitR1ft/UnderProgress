@@ -1,12 +1,12 @@
 # ==============================================================================
-# AutoPenTest AI Backend - FastAPI Application
+# UniVex Backend - FastAPI Application
 # Purpose: Main API server with WebSocket, SSE, and Docker SDK support
 # ==============================================================================
 
 FROM python:3.11-slim-bookworm
 
-LABEL maintainer="Muhammad Adeel Haider"
-LABEL description="AutoPenTest AI - FastAPI Backend"
+LABEL maintainer="BitR1FT"
+LABEL description="UniVex - FastAPI Backend"
 LABEL version="1.0.0"
 
 # Prevent interactive prompts
@@ -54,11 +54,11 @@ ENV GOPATH="/root/go"
 # Install httpx (HTTP probing)
 RUN go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 
-# Install Wappalyzer (Technology detection)
-RUN npm install -g wappalyzer
+# Install Wappalyzer CLI (Technology detection)
+RUN npm install -g wappalyzer-cli
 
 # Verify installations
-RUN httpx -version && wappalyzer --version && nmap --version
+RUN httpx -version && nmap --version
 
 # ==============================================================================
 # PYTHON ENVIRONMENT
