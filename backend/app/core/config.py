@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     
     # Project Information
     PROJECT_NAME: str = "UniVex"
-    VERSION: str = "0.1.0"
+    VERSION: str = "1.0.1"
     DESCRIPTION: str = "AI-Powered Penetration Testing Framework"
     ENVIRONMENT: str = "development"
     
@@ -58,8 +58,11 @@ class Settings(BaseSettings):
     
     # AI Configuration
     OPENAI_API_KEY: str = ""
-    OPENAI_MODEL: str = "gpt-4-turbo-preview"
+    OPENAI_MODEL: str = "gpt-4o"
     ANTHROPIC_API_KEY: str = ""
+    ANTHROPIC_MODEL: str = "claude-3-5-sonnet-20241022"
+    GOOGLE_API_KEY: str = ""
+    GOOGLE_MODEL: str = "gemini-1.5-flash"
     
     # AutoChain — automated pentest pipeline
     # Maximum risk level auto-approved without human confirmation.

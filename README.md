@@ -175,6 +175,7 @@ The AI agent uses the **ReAct (Reasoning + Acting)** pattern powered by GPT-4 / 
 |-----|---------|-------------|
 | `OPENAI_API_KEY` | GPT-4 AI agent | [platform.openai.com](https://platform.openai.com) |
 | `ANTHROPIC_API_KEY` | Claude fallback | [console.anthropic.com](https://console.anthropic.com) |
+| `GOOGLE_API_KEY` | Gemini fallback (free tier) | [aistudio.google.com](https://aistudio.google.com/app/apikey) |
 | `TAVILY_API_KEY` | OSINT web search (optional) | [app.tavily.com](https://app.tavily.com) |
 | `NVD_API_KEY` | CVE enrichment (optional) | [nvd.nist.gov](https://nvd.nist.gov/developers) |
 
@@ -192,7 +193,7 @@ cp .env.example .env
 
 # 3. Set required secrets in .env  (minimum required values)
 #    SECRET_KEY  → run: openssl rand -hex 32
-#    OPENAI_API_KEY or ANTHROPIC_API_KEY
+#    At least one LLM provider: OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY
 #    GRAFANA_PASSWORD
 #    All *_PASSWORD variables (change defaults)
 
@@ -365,8 +366,10 @@ Copy `.env.example` to `.env` and set the following variables:
 |----------|----------|-------------|
 | `OPENAI_API_KEY` | One of these | OpenAI API key for GPT-4 |
 | `ANTHROPIC_API_KEY` | One of these | Anthropic API key for Claude |
-| `OPENAI_MODEL` | No | Default: `gpt-4-turbo-preview` |
-| `ANTHROPIC_MODEL` | No | Default: `claude-3-opus-20240229` |
+| `GOOGLE_API_KEY` | One of these | Google API key for Gemini (free tier available) |
+| `OPENAI_MODEL` | No | Default: `gpt-4o` |
+| `ANTHROPIC_MODEL` | No | Default: `claude-3-5-sonnet-20241022` |
+| `GOOGLE_MODEL` | No | Default: `gemini-1.5-flash` |
 | `LANGCHAIN_API_KEY` | No | LangSmith tracing (optional) |
 
 ### AutoChain Pipeline

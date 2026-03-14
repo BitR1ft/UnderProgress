@@ -12,6 +12,7 @@ from typing import Dict, Any, List
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from ..state.agent_state import AgentState, Phase
 from ..prompts.system_prompts import get_system_prompt
@@ -48,8 +49,8 @@ class ReActNodes:
         Initialize ReAct nodes with LLM.
         
         Args:
-            model_provider: "openai" or "anthropic"
-            model_name: Model identifier (e.g., "gpt-4", "claude-3-opus-20240229")
+            model_provider: "openai", "anthropic", or "google"
+            model_name: Model identifier (e.g., "gpt-4", "claude-3-opus-20240229", "gemini-1.5-flash")
         """
         self.model_provider = model_provider
         self.model_name = model_name
@@ -68,6 +69,12 @@ class ReActNodes:
                 model=self.model_name,
                 temperature=0.7,
                 max_tokens=2000,
+            )
+        elif self.model_provider == "google":
+            self.llm = ChatGoogleGenerativeAI(
+                model=self.model_name,
+                temperature=0.7,
+                max_output_tokens=2000,
             )
         else:
             raise ValueError(f"Unknown model provider: {self.model_provider}")

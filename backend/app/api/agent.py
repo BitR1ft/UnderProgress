@@ -25,7 +25,7 @@ class ChatRequest(BaseModel):
     message: str = Field(..., description="User message to send to the agent")
     thread_id: Optional[str] = Field(None, description="Thread ID for conversation continuity")
     project_id: Optional[str] = Field(None, description="Project ID for context")
-    model_provider: str = Field("openai", description="LLM provider (openai or anthropic)")
+    model_provider: str = Field("openai", description="LLM provider (openai, anthropic, or google)")
     model_name: str = Field("gpt-4", description="Model name")
 
 
@@ -103,7 +103,7 @@ async def get_agent_status():
     """
     return AgentStatus(
         available=True,
-        model_providers=["openai", "anthropic"],
+        model_providers=["openai", "anthropic", "google"],
         default_model="gpt-4"
     )
 

@@ -726,9 +726,13 @@ export function AdvancedProjectForm({
               <div className="space-y-1.5">
                 <Label htmlFor="ai_model">AI Model</Label>
                 <Select id="ai_model" {...register('ai_model')}>
-                  <option value="gpt-4">GPT-4</option>
-                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                  <option value="claude-3">Claude 3</option>
+                  <option value="gpt-4o">GPT-4o (OpenAI)</option>
+                  <option value="gpt-4">GPT-4 (OpenAI)</option>
+                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo (OpenAI)</option>
+                  <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Anthropic)</option>
+                  <option value="claude-3">Claude 3 (Anthropic)</option>
+                  <option value="gemini-1.5-flash">Gemini 1.5 Flash (Google)</option>
+                  <option value="gemini-1.5-pro">Gemini 1.5 Pro (Google)</option>
                   <option value="local">Local LLM</option>
                 </Select>
               </div>

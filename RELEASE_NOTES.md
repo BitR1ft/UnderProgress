@@ -1,3 +1,46 @@
+# UniVex v1.0.1 Release Notes
+
+**Release Date:** March 14, 2026
+**Status:** v1.0.1 — Patch Release
+**Codename:** "Gemini"
+
+---
+
+## 🚀 What's New in v1.0.1
+
+### Google Gemini API Integration
+
+Users who cannot access paid OpenAI or Anthropic APIs can now use **Google Gemini** as an
+alternative LLM provider — including the free tier available via Google AI Studio.
+
+- **New provider `google`** — powered by `langchain-google-genai` and the Gemini API
+- **Default model:** `gemini-1.5-flash` (fast and capable; free-tier eligible)
+- **Alternative model:** `gemini-1.5-pro` for higher quality reasoning tasks
+- **Priority-based selection** — provider auto-detected from environment variables:
+  1. `OPENAI_API_KEY` → GPT-4o
+  2. `ANTHROPIC_API_KEY` → Claude 3.5 Sonnet
+  3. `GOOGLE_API_KEY` → Gemini 1.5 Flash
+
+### Configuration
+
+Add to `.env`:
+
+```dotenv
+# Google Gemini (free tier available)
+GOOGLE_API_KEY=AIza...
+GOOGLE_MODEL=gemini-1.5-flash   # optional, this is the default
+```
+
+Get a free key at [aistudio.google.com](https://aistudio.google.com/app/apikey).
+
+### Other Changes
+
+- Frontend AI model selector now lists GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Flash, and Gemini 1.5 Pro
+- Backend version bumped to `1.0.1`
+- Documentation updated across README, CONFIGURATION_GUIDE, and QUICKSTART
+
+---
+
 # UniVex v1.0.0 Release Notes
 
 **Release Date:** March 14, 2026  

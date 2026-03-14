@@ -76,6 +76,8 @@ At least one AI provider must be configured for the agent to function.
 | `OPENAI_MODEL` | — | `gpt-4o` | OpenAI model name |
 | `ANTHROPIC_API_KEY` | ⚠️ | — | Anthropic API key (Claude fallback) |
 | `ANTHROPIC_MODEL` | — | `claude-3-5-sonnet-20241022` | Anthropic model name |
+| `GOOGLE_API_KEY` | ⚠️ | — | Google API key (Gemini fallback) |
+| `GOOGLE_MODEL` | — | `gemini-1.5-flash` | Google Gemini model name |
 | `AI_TEMPERATURE` | — | `0.1` | LLM sampling temperature (0–1) |
 | `AI_MAX_TOKENS` | — | `4096` | Max tokens per LLM response |
 | `AI_MAX_ITERATIONS` | — | `20` | Max ReAct loop iterations per agent session |
@@ -225,7 +227,8 @@ The agent uses a priority-based provider selection:
 
 1. `OPENAI_API_KEY` set → GPT-4o
 2. `ANTHROPIC_API_KEY` set → Claude 3.5 Sonnet
-3. Neither set → agent raises `ConfigurationError` at startup
+3. `GOOGLE_API_KEY` set → Gemini 1.5 Flash
+4. None set → agent raises `ConfigurationError` at startup
 
 Override per-request via the API:
 
